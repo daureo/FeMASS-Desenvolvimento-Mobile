@@ -1,22 +1,13 @@
 import { StyleSheet, View, Text } from "react-native";
+import styles from './Title.component.style';
 
 export default function Title() {
 
     return (
-        <View>
-            <Text>Cálculo de IMC</Text>
-
+        <View >
+            <Text style={styles.titulo}>Cálculo de IMC</Text>
         </View>
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-
-});
 
