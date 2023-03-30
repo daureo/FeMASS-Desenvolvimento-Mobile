@@ -9,7 +9,7 @@ export default function Header({nomeUsuario}){
             <View style={styles.conteudo}>
                 <Text style={styles.usuario}>{nomeUsuario}</Text>
                 <TouchableOpacity activeOpacity={0.9} style={styles.botaoUsuario}>
-                    <Feather name='user' color='#FFF' size={27} />
+                    <Feather name='user' color='#FFF' size={20} />
                 </TouchableOpacity>
             </View>
         </View>
