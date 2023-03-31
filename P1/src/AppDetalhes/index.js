@@ -1,16 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import AppTelas from './src/AppTelas';
 
-
-export default function App() {
+export default function AppDetalhes() {
   return (
-    <>
-      
-      <AppTelas></AppTelas>
-      <StatusBar style="light" />
-      
-    </>
+    <View style={styles.container}>
+      <Text>Open up App.js to start working on your app!</Text>
+      <StatusBar style="auto" />
+    </View>
   );
 }
 

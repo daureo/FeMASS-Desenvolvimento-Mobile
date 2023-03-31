@@ -1,23 +1,19 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import AppTelas from './src/AppTelas';
 
-
-export default function App() {
+export default function AppCadastro() {
   return (
-    <>
-      
-      <AppTelas></AppTelas>
+    <View style={styles.container}>
+      <Text>Cadastro</Text>
       <StatusBar style="light" />
-      
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#E5E5E5',
     alignItems: 'center',
     justifyContent: 'center',
   },
