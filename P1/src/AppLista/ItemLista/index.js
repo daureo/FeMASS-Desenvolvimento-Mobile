@@ -1,16 +1,20 @@
 
+import { useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
-export default function ItemLista() {
+export default function ItemLista(props) {
+     
+    console.log(props.id);
+    //usar essa id para passar a identificacao do contato para a tela de vizualizacao, que ira ler do banco somente aquele contato
     return (
         <View style={styles.container}>
             <Image 
                 style={styles.foto}
-                source={ require('../../../assets/photoIcon.png') }
+                source={ props.foto ?  {uri: props.foto} : require('../../../assets/photoIcon.png') }
             />
             <View style={styles.nomeContainer}>
-                <Text style={styles.campoNome}>Danielle Cristina</Text>
-                <Text style={styles.campoSobrenome}>de Araújo Silva</Text>
+                <Text style={styles.campoNome}>{props.nome}</Text>
+                <Text style={styles.campoSobrenome}>{props.sobrenome}</Text>
             </View>
         </View>
     );
