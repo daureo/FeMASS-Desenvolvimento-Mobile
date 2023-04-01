@@ -17,6 +17,7 @@ export default function AppLista() {
   }, []);
 
   //selecionar do banco de dados e buscar o item com o ID fornecido e entao passar o obj
+  //usar essa id para passar a identificacao do contato para a tela de vizualizacao, que ira ler do banco somente aquele contato
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
@@ -26,7 +27,7 @@ export default function AppLista() {
         contentContainerStyle={styles.itemsContainer}>
         {items.map(item => {
           return <TouchableOpacity
-          onPress={()=> Alert.alert("Chama na catraca!")}
+          onPress={()=> Alert.alert('Chama na catraca! ' + item.id)}
           >
             <ItemLista id={item.id} nome={item.nome} sobrenome={item.sobrenome} foto={item.fotoURI} />
           </TouchableOpacity>

@@ -4,8 +4,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 
 export default function ItemLista(props) {
      
-    console.log(props.id);
-    //usar essa id para passar a identificacao do contato para a tela de vizualizacao, que ira ler do banco somente aquele contato
+    
     return (
         <View style={styles.container}>
             <Image 
