@@ -3,8 +3,75 @@ import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity
 import CompTelefone from './CompTelefone';
 import CompEmail from './CompEmail';
 import { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from 'expo-image-picker';
+
 
 export default function AppCadastro() {
+
+//Poderia ser feito com classes?
+const [id, setID] = useState();
+const [foto, setFoto] = useState();
+const [nome, setNome] = useState();
+const [sobrenome, setSobrenome] = useState();
+const telefone = [];
+const email = [];
+const [endereco, setEndereco] = useState();
+const [numero, setNumero] = useState();
+const [bairro, setBairro] = useState();
+const [cidade, setCidade] = useState();
+
+state = {
+  inputTextValue: '',
+}
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result.assets[0].uri, foto);
+
+    if (!result.canceled) {
+     fotoMudou(result.assets[0].uri);
+    }
+  };
+
+  const takeImage = async () => {
+
+    let permissaoCamera = await ImagePicker.requestCameraPermissionsAsync();
+
+    
+    if(permissaoCamera.granted === false){
+      alert("Você negou a permissão da câmera");
+      return;
+    }
+
+    try{
+      let result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+      
+      
+      console.log(result.assets[0].uri, foto);
+  
+      if (!result.canceled) {
+       fotoMudou(result.assets[0].uri);
+      
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    
+
+  };
 
   function manipularImagem(){
     Alert.alert(
@@ -13,12 +80,12 @@ export default function AppCadastro() {
       [
         {
           text: "Galeria",
-          onPress: () => console.log("Pegando da Galeria"),
+          onPress: () => { pickImage()  },
           style: 'default'
         },
         {
           text: "Câmera",
-          onPress: () => console.log("Abrindo camera"),
+          onPress: () => { takeImage() },
           style: 'default'
         },
       ],
@@ -28,6 +95,67 @@ export default function AppCadastro() {
       }
     );
   }
+
+  function idMudou(){
+    setID();
+  }
+
+  function fotoMudou(foto){
+    setFoto(foto);
+  }
+
+  function nomeMudou(nome){
+    setNome(nome);    
+  }
+
+  function sobrenomeMudou(sobrenome){
+    setSobrenome(sobrenome);    
+  }
+
+  //TelefoneMudou fica implementado dentro do componente
+  //EmailMudou fica implementado dentro do componente
+
+  function enderecoMudou(endereco){
+    setEndereco(endereco);
+  }
+
+  function numeroMudou(numero){
+    setNumero(numero);
+  }
+
+  function bairroMudou(bairro){
+    setBairro(bairro);
+  }
+
+  function limparCampos(){
+   
+  }
+
+  function cidadeMudou(cidade){
+    setCidade(cidade);
+  }
+
+  //async 
+  function salvarContato(){
+    //validar os campos!!!
+    const contatoSalvo = {id: new Date().getTime(), nome, sobrenome, telefone, email, endereco, numero, bairro, cidade, foto};
+    let listaContatos = [];
+
+    /*const response = await AsyncStorage.getItem('listaContatos');
+
+    if (response) listaContatos = JSON.parse(response);
+
+    listaContatos.push(contatoSalvo);
+
+    console.log(listaContatos);
+
+    await AsyncStorage.setItem('listaContatos', JSON.stringify(listaContatos));
+  */
+    limparCampos();
+
+    
+  }
+
 
   return (
     <View style={styles.container}>
@@ -40,14 +168,24 @@ export default function AppCadastro() {
           >
             <Image
             style={styles.foto}
-            source={require('../../assets/photoIcon.png')
-            }
+            source={ foto ?  {uri: foto} : require('../../assets/photoIcon.png') }
+            
           /></TouchableOpacity>
           <View style={styles.nomeContainer}>
+
             <TextInput style={styles.campoNome}
-              placeholder='Nome'></TextInput>
+              
+              placeholder='Nome'
+              clearButtonMode='always'
+              onChangeText={nomeMudou}
+              >                
+              </TextInput>
+
             <TextInput style={styles.campoSobrenome}
-              placeholder='Sobrenome'></TextInput>
+              placeholder='Sobrenome'
+              clearButtonMode='always'
+              onChangeText={sobrenomeMudou}>                
+              </TextInput>
           </View>
         </View>
         <View style={styles.camposContato}>
@@ -56,23 +194,33 @@ export default function AppCadastro() {
           <TextInput
             placeholder='Endereço'
             style={[styles.campoTelefone, styles.campo]}
+            clearButtonMode='always'
+            onChangeText={enderecoMudou}
           ></TextInput>
           <View style={styles.nrBairro}>
             <TextInput
               placeholder='Nº'
               style={[styles.campoNr]}
+              clearButtonMode='always'
+            onChangeText={numeroMudou}
             ></TextInput>
             <TextInput
               placeholder='Bairro'
               style={[styles.campoBairro]}
+              clearButtonMode='always'
+            onChangeText={bairroMudou}
             ></TextInput>
           </View>
           <TextInput
             placeholder='Cidade'
             style={[styles.campoTelefone, styles.campo]}
+            clearButtonMode='always'
+            onChangeText={cidadeMudou}
           ></TextInput>
         </View>
-        <TouchableOpacity style={styles.btnSalvar}>
+        <TouchableOpacity style={styles.btnSalvar}
+        onPress={salvarContato}
+        >
           <Text style={styles.btnSalvarTxt}>Salvar</Text>
         </TouchableOpacity>
       </ScrollView>
