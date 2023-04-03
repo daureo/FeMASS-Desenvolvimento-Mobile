@@ -20,7 +20,7 @@ export default function AppLista() {
   }
 
   function onRefresh(){
-    
+    setRefresh(!refresh);
   }
 
   useEffect(() => {

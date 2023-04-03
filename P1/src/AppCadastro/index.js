@@ -58,8 +58,6 @@ const [refresh, setRefresh] = useState(false);
         quality: 1,
       });
       
-      
-      console.log(result.assets[0].uri, foto);
   
       if (!result.canceled) {
        fotoMudou(result.assets[0].uri);
@@ -146,7 +144,7 @@ const [refresh, setRefresh] = useState(false);
       setNumero(null);
       setBairro(null);
       setCidade(null);
-      setRefresh(true); // set refresh to true to trigger a re-render of the component
+      setRefresh(!refresh); // set refresh to true to trigger a re-render of the component
    
     
     
