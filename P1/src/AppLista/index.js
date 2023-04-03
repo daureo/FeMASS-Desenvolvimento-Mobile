@@ -4,36 +4,43 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert } from 'rea
 import ItemLista from './ItemLista';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RefreshControl } from 'react-native-gesture-handler';
+import AppDetalhes from '../AppDetalhes';
 
 export default function AppLista() {
 
 
   const [listaContatos, setListaContatos] = useState([]);
-  const [refresh, setRefresh] = useState(false);
+  const [refresh, setRefresh] = useState(true);
+  const [mostrarViewDetalhes, setMostrarViewDetalhes] = useState(false);
+  const [contatoDetalhado, setContatoDetalhado] = useState();
 
-
-  async function carregarLista(){
+  async function carregarLista() {
     const response = await AsyncStorage.getItem('listaContatos');
- 
-    if (response) setListaContatos(JSON.parse(response));    
+
+    if (response) setListaContatos(JSON.parse(response));
 
   }
 
-  function onRefresh(){
+  function onRefresh() {
     setRefresh(!refresh);
   }
 
   useEffect(() => {
 
- 
-     carregarLista();
-    
+
+    carregarLista();
+
 
 
   }, [onRefresh]);
 
-  function chamarDetalhes(){
-    Alert.alert('Abrindo outra tela');onRefresh();
+  function chamarDetalhes(item) {    
+    setContatoDetalhado(item);
+    setMostrarViewDetalhes(true);
+  }
+
+  function onCloseSecondScrollView(){
+    setMostrarViewDetalhes(false);
   }
 
   //selecionar do banco de dados e buscar o item com o ID fornecido e entao passar o obj
@@ -42,20 +49,30 @@ export default function AppLista() {
     <View style={styles.container} key={refresh}>
       <StatusBar style="light" />
 
-      <ScrollView
+      {mostrarViewDetalhes ? (
+      <AppDetalhes onClose={onCloseSecondScrollView} detalhesContato={contatoDetalhado}/>      
+      
+      ) : (
+        <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.itemsContainer}
-        >
+      >
         {listaContatos.map(item => {
           return <TouchableOpacity
-          onPress={()=> chamarDetalhes()}
-          key={item.id} 
+            onPress={() => chamarDetalhes(item.id)}
+            key={item.id}
           >
             <ItemLista id={item.id} nome={item.nome} sobrenome={item.sobrenome} foto={item.foto} />
           </TouchableOpacity>
         })}
 
       </ScrollView>
+
+      )
+
+      }
+
+      
     </View>
   );
 }
