@@ -21,9 +21,8 @@ const [numero, setNumero] = useState();
 const [bairro, setBairro] = useState();
 const [cidade, setCidade] = useState();
 
-state = {
-  inputTextValue: '',
-}
+const [refresh, setRefresh] = useState(false);
+
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -128,20 +127,41 @@ state = {
   }
 
   function limparCampos(){
+    
+      setID(null);
+      setFoto(null);
+      setNome(null);
+      setSobrenome(null);
+      
+      telefone.forEach((telefone, index) => {
+        telefone.ref.current.setTelefone('');
+        telefone.ref.current.setTipo('casa');
+      });
+      email.forEach((email, index) => {
+        email.ref.current.setEmail('');
+        email.ref.current.setTipo('pessoal');
+      });
+
+      setEndereco(null);
+      setNumero(null);
+      setBairro(null);
+      setCidade(null);
+      setRefresh(true); // set refresh to true to trigger a re-render of the component
    
+    
+    
   }
 
   function cidadeMudou(cidade){
     setCidade(cidade);
   }
 
-  //async 
-  function salvarContato(){
+  async  function salvarContato(){
     //validar os campos!!!
     const contatoSalvo = {id: new Date().getTime(), nome, sobrenome, telefone, email, endereco, numero, bairro, cidade, foto};
     let listaContatos = [];
 
-    /*const response = await AsyncStorage.getItem('listaContatos');
+    const response = await AsyncStorage.getItem('listaContatos');
 
     if (response) listaContatos = JSON.parse(response);
 
@@ -150,15 +170,16 @@ state = {
     console.log(listaContatos);
 
     await AsyncStorage.setItem('listaContatos', JSON.stringify(listaContatos));
-  */
+  
     limparCampos();
 
+      Alert.alert("Novo Contato Salvo!");
     
   }
 
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} key={refresh}>
       <StatusBar style="light" />
 
       <ScrollView>

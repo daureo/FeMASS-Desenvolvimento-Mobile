@@ -44,7 +44,7 @@ export default function AppTelas() {
           name="Cadastro"
           component={AppCadastro}
           options={{ tabBarLabel: "NOVO"}}
-          
+                    
         />
       </Navigator>
 
