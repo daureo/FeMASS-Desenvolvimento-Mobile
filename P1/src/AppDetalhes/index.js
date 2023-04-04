@@ -54,6 +54,27 @@ function onRefresh() {
   setRefresh(!refresh);
 }
 
+async function onApagar(id) {
+  
+  
+  const response = await AsyncStorage.getItem('listaContatos');
+
+  if (response) {
+
+    let lista = JSON.parse(response);
+    
+    let contato = lista.find(obj => obj.id === id);
+    
+    lista.splice(lista.indexOf(contato), 1);
+
+    await AsyncStorage.setItem('listaContatos', JSON.stringify(lista));
+
+  }
+  Alert.alert("Contato Apagado!");
+  props.onClose();
+
+}
+
 useEffect(() => {
 
 
@@ -94,7 +115,7 @@ useEffect(() => {
           <Text
            
             style={[styles.campoTelefone, styles.campo]}
-          
+
           >
 
               {endereco}
@@ -117,7 +138,13 @@ useEffect(() => {
            
           >{cidade}</Text>
         </View>
-       <TouchableOpacity onPress={props.onClose}><Text>Fechar</Text></TouchableOpacity>
+        <View style={styles.areaBtn}>
+          <TouchableOpacity onPress={props.onClose}
+          style={styles.btnFechar}><Text style={styles.btnFecharTxt}>Fechar</Text></TouchableOpacity>
+
+<TouchableOpacity onPress={()=>{onApagar(id)}}
+          style={styles.btnFechar}><Text style={styles.btnFecharTxt}>Apagar</Text></TouchableOpacity>
+       </View>
       </ScrollView>
     </View >
   );
@@ -149,6 +176,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     height: '70%',
     marginLeft: 20,
+    
 
   },
   campoNome: {
@@ -157,9 +185,9 @@ const styles = StyleSheet.create({
     height: '40%',
     fontSize: 15,
     fontWeight: 'bold',
-
     borderColor: '#fff',
     borderWidth: 1,
+    paddingTop: 7,
   },
   campoSobrenome: {
     textAlign: 'center',
@@ -170,6 +198,8 @@ const styles = StyleSheet.create({
     marginTop: 30,
     borderColor: '#fff',
     borderWidth: 1,
+    paddingTop: 7,
+
   },
   camposContato: {
     flex: 1,
@@ -177,11 +207,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     marginTop: 30,
     height: '100%',
-
-
   },
   campoTelefone: {
-    textAlign: 'center',
+    textAlign: 'center',    
 
   },
   nrBairro: {
@@ -194,7 +222,9 @@ const styles = StyleSheet.create({
     width: '57%',
     height: 40,
     backgroundColor: '#D9D9D9',
-    textAlign: 'center'
+    textAlign: 'center',
+    paddingTop: 10,
+    
   },
   campoNr: {
     marginTop: 10,
@@ -205,6 +235,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#D9D9D9',
     marginRight: 10,
     textAlign: 'center',
+    paddingTop: 10,
   },
   campo: {
     marginTop: 10,
@@ -212,26 +243,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: '80%',
     height: 40,
-    backgroundColor: '#D9D9D9'
+    backgroundColor: '#D9D9D9',
+    paddingTop: 10,
   },
   campoDinamico: {
     flexDirection: 'row',
   },
-  btnAdd: {
-    width: '5%',
-    borderColor: '#fff',
-    borderWidth: 1,
-    height: 40,
+  areaBtn: {
+    flexDirection: 'row',
   },
-  btnSalvarTxt: {
+  btnFecharTxt: {
     color: '#fff'
   },
-  btnSalvar: {
+  btnFechar: {
     alignItems: 'center',
     justifyContent: 'center',
     borderColor: '#fff',
     borderWidth: 1,
-    width: '50%',
+    width: '40%',
     height: 40,
     borderRadius: 30,
     alignSelf: 'center',

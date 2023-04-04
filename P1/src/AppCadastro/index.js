@@ -33,7 +33,7 @@ const [refresh, setRefresh] = useState(false);
       quality: 1,
     });
 
-    console.log(result.assets[0].uri, foto);
+    
 
     if (!result.canceled) {
      fotoMudou(result.assets[0].uri);
@@ -163,9 +163,7 @@ const [refresh, setRefresh] = useState(false);
 
     if (response) listaContatos = JSON.parse(response);
 
-    listaContatos.push(contatoSalvo);
-
-    console.log(listaContatos);
+    listaContatos.push(contatoSalvo);    
 
     await AsyncStorage.setItem('listaContatos', JSON.stringify(listaContatos));
   

@@ -43,6 +43,8 @@ export default function AppLista() {
     setMostrarViewDetalhes(false);
   }
 
+  
+
   //selecionar do banco de dados e buscar o item com o ID fornecido e entao passar o obj
   //usar essa id para passar a identificacao do contato para a tela de vizualizacao, que ira ler do banco somente aquele contato
   return (
