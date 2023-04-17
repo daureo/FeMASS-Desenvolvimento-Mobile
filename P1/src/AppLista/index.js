@@ -7,18 +7,22 @@ import { RefreshControl } from 'react-native-gesture-handler';
 import AppDetalhes from '../AppDetalhes';
 
 export default function AppLista() {
-
+//Criar funcoes para manipular os dados soh daqui.. nenhum componente acessa mais os dados...
 
   const [listaContatos, setListaContatos] = useState([]);
-  const [refresh, setRefresh] = useState(true);
+  const [refresh, setRefresh] = useState(false);
   const [mostrarViewDetalhes, setMostrarViewDetalhes] = useState(false);
   const [contatoDetalhado, setContatoDetalhado] = useState();
 
   async function carregarLista() {
     const response = await AsyncStorage.getItem('listaContatos');
 
-    if (response) setListaContatos(JSON.parse(response));
+    if (response) {
+      let listaOrdenada = JSON.parse(response);
 
+      setListaContatos(listaOrdenada.sort((a, b) => a.nome.localeCompare(b.nome)));
+    }
+    
   }
 
   function onRefresh() {

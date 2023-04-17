@@ -1,88 +1,267 @@
 import { StatusBar } from 'expo-status-bar';
-import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
+import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import CompTelefone from '../AppCadastro/CompTelefone';
+import CompEmail from '../AppCadastro/CompEmail';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
-import CompTelefone from '../AppCadastro/CompTelefone';
-import CompEmail from '../AppCadastro/CompEmail';
 
 
 export default function AppDetalhes(props) {
 
+  //Poderia ser feito com classes?
   const [id, setID] = useState();
-const [foto, setFoto] = useState();
-const [nome, setNome] = useState();
-const [sobrenome, setSobrenome] = useState();
-const telefone = [];
-const email = [];
-const [endereco, setEndereco] = useState();
-const [numero, setNumero] = useState();
-const [bairro, setBairro] = useState();
-const [cidade, setCidade] = useState();
-const [refresh, setRefresh] = useState(false);
+  const [foto, setFoto] = useState();
+  const [nome, setNome] = useState();
+  const [sobrenome, setSobrenome] = useState();
+  const telefone = [];
+  const email = [];
+  const [endereco, setEndereco] = useState();
+  const [numero, setNumero] = useState();
+  const [bairro, setBairro] = useState();
+  const [cidade, setCidade] = useState();
+  const [refresh, setRefresh] = useState(false);
+  const [isEditable, setIsEditable] = useState(false);
+  const [btnSalvarTxt, setBtnSalvarTxt] = useState("Editar");
 
-async function carregarContato(id) {
-  
-  
-  const response = await AsyncStorage.getItem('listaContatos');
 
-  if (response) {
+  async function carregarContato(id) {
 
-    let lista = JSON.parse(response);
-    
-    let contato = lista.find(obj => obj.id === id);
 
-    setID(id);
-    setFoto(contato.foto);
-    setNome(contato.nome);
-    setSobrenome(contato.sobrenome);
-    //Telefone
-    //Email
-    setEndereco(contato.endereco);
-    setNumero(contato.numero);
-    setBairro(contato.bairro);
-    setCidade(contato.cidade);
+    const response = await AsyncStorage.getItem('listaContatos');
+
+    if (response) {
+
+      let lista = JSON.parse(response);
+
+      let contato = lista.find(obj => obj.id === id);
+
+      setID(id);
+      setFoto(contato.foto);
+      setNome(contato.nome);
+      setSobrenome(contato.sobrenome);
+      //Telefone
+      //Email
+      setEndereco(contato.endereco);
+      setNumero(contato.numero);
+      setBairro(contato.bairro);
+      setCidade(contato.cidade);
+
+    }
+
+  }
+
+  function tornarEditavel() {
+    if (!isEditable) {
+      setBtnSalvarTxt("Salvar");
+      console.log("EntrouemS " + isEditable);
+    }
+    else {
+      setBtnSalvarTxt("Editar");
+      console.log("EntrouemE " + isEditable);
+      atualizarContato();
+    }
+    setIsEditable(!isEditable);
 
   }
 
-  
+  function onRefresh() {
+    setRefresh(!refresh);
+  }
 
-}
+  async function onApagar(id) {
 
-function onRefresh() {
-  setRefresh(!refresh);
-}
 
-async function onApagar(id) {
-  
-  
-  const response = await AsyncStorage.getItem('listaContatos');
+    const response = await AsyncStorage.getItem('listaContatos');
 
-  if (response) {
+    if (response) {
 
-    let lista = JSON.parse(response);
-    
-    let contato = lista.find(obj => obj.id === id);
-    
-    lista.splice(lista.indexOf(contato), 1);
+      let lista = JSON.parse(response);
 
-    await AsyncStorage.setItem('listaContatos', JSON.stringify(lista));
+      let contato = lista.find(obj => obj.id === id);
+
+      lista.splice(lista.indexOf(contato), 1);
+
+      await AsyncStorage.setItem('listaContatos', JSON.stringify(lista));
+
+    }
+    Alert.alert("Contato Apagado!");
+    props.onClose();
 
   }
-  Alert.alert("Contato Apagado!");
-  props.onClose();
 
-}
-
-useEffect(() => {
+  useEffect(() => {
 
 
-  carregarContato(props.detalhesContato);
+    carregarContato(props.detalhesContato);
 
 
 
-}, []);
+  }, []);
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+
+
+    if (!result.canceled) {
+      fotoMudou(result.assets[0].uri);
+    }
+  };
+
+  const takeImage = async () => {
+
+    let permissaoCamera = await ImagePicker.requestCameraPermissionsAsync();
+
+
+    if (permissaoCamera.granted === false) {
+      alert("Você negou a permissão da câmera");
+      return;
+    }
+
+    try {
+      let result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+
+      if (!result.canceled) {
+        fotoMudou(result.assets[0].uri);
+
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+
+  };
+
+  function manipularImagem() {
+    if (this.editable == false) {
+      console.log("Nao editavel");
+    }
+    Alert.alert(
+      "Adicionar Foto",
+      "Informe de onde você quer adicionar a foto",
+      [
+        {
+          text: "Galeria",
+          onPress: () => { pickImage() },
+          style: 'default'
+        },
+        {
+          text: "Câmera",
+          onPress: () => { takeImage() },
+          style: 'default'
+        },
+      ],
+      {
+        cancelable: true,
+        onDismiss: () => console.log("Cancelado"),
+      }
+    );
+  }
+
+  function idMudou() {
+    setID();
+  }
+
+  function fotoMudou(foto) {
+    setFoto(foto);
+  }
+
+  function nomeMudou(nome) {
+    setNome(nome);
+  }
+
+  function sobrenomeMudou(sobrenome) {
+    setSobrenome(sobrenome);
+  }
+
+  //TelefoneMudou fica implementado dentro do componente
+  //EmailMudou fica implementado dentro do componente
+
+  function enderecoMudou(endereco) {
+    setEndereco(endereco);
+  }
+
+  function numeroMudou(numero) {
+    setNumero(numero);
+  }
+
+  function bairroMudou(bairro) {
+    setBairro(bairro);
+  }
+
+  function limparCampos() {
+
+    setID(null);
+    setFoto(null);
+    setNome(null);
+    setSobrenome(null);
+
+    telefone.forEach((telefone, index) => {
+      telefone.ref.current.setTelefone('');
+      telefone.ref.current.setTipo('casa');
+    });
+    email.forEach((email, index) => {
+      email.ref.current.setEmail('');
+      email.ref.current.setTipo('pessoal');
+    });
+
+    setEndereco(null);
+    setNumero(null);
+    setBairro(null);
+    setCidade(null);
+    setRefresh(!refresh);
+
+
+
+  }
+
+  function cidadeMudou(cidade) {
+    setCidade(cidade);
+  }
+
+  async function atualizarContato() {
+    //validar os campos!!!
+
+    const contatoSalvo = { id, nome, sobrenome, telefone, email, endereco, numero, bairro, cidade, foto };
+    let listaContatos = [];
+
+    const response = await AsyncStorage.getItem('listaContatos');
+
+    if (response) listaContatos = JSON.parse(response);
+
+    let contato = listaContatos.find(obj => obj.id === id);
+
+    contato = contatoSalvo;
+
+    let listaAtualizada = listaContatos.map(obj => {
+      if (obj.id === id) {
+        return { ...contatoSalvo };
+      } else {
+        return obj;
+      }
+    });
+
+    await AsyncStorage.setItem('listaContatos', JSON.stringify(listaAtualizada));
+
+
+    Alert.alert("Alteração no Contato Concluida!");
+
+    console.log(listaAtualizada);
+  }
+
 
   return (
     <View style={styles.container} key={refresh}>
@@ -91,60 +270,79 @@ useEffect(() => {
       <ScrollView>
         <View style={styles.cabecalho}>
           <TouchableOpacity
-         // onPress={()=> manipularImagem()}
+            onPress={() => manipularImagem()}
+
           >
             <Image
-            style={styles.foto}
-            source={ foto ?  {uri: foto} : require('../../assets/photoIcon.png') }
-            
-          /></TouchableOpacity>
+              style={styles.foto}
+              source={foto ? { uri: foto } : require('../../assets/photoIcon.png')}
+
+
+            /></TouchableOpacity>
           <View style={styles.nomeContainer}>
 
-            <Text style={styles.campoNome}> 
-            {nome}               
-              </Text>
+            <TextInput style={styles.campoNome}
 
-            <Text style={styles.campoSobrenome}>    
-            {sobrenome}            
-              </Text>
+              clearButtonMode='always'
+              onChangeText={nomeMudou}
+              editable={isEditable}
+            >{nome}
+            </TextInput>
+
+            <TextInput style={styles.campoSobrenome}
+
+              clearButtonMode='always'
+              onChangeText={sobrenomeMudou}
+              editable={isEditable}>{sobrenome}</TextInput>
           </View>
         </View>
         <View style={styles.camposContato}>
-          <CompTelefone />
-          <CompEmail />
-          <Text
-           
+          <CompTelefone></CompTelefone>
+          <CompEmail></CompEmail>
+          <TextInput
+
             style={[styles.campoTelefone, styles.campo]}
-
-          >
-
-              {endereco}
-          </Text>
+            clearButtonMode='always'
+            onChangeText={enderecoMudou}
+            editable={isEditable}
+          >{endereco}</TextInput>
           <View style={styles.nrBairro}>
-            <Text
-             
+            <TextInput
+              
               style={[styles.campoNr]}
-            
-            >{numero}</Text>
-            <Text
-            
+              clearButtonMode='always'
+              onChangeText={numeroMudou}
+              editable={isEditable}
+            >{numero}</TextInput>
+            <TextInput
+              
               style={[styles.campoBairro]}
-            
-            >{bairro}</Text>
+              clearButtonMode='always'
+              onChangeText={bairroMudou}
+              editable={isEditable}
+            >{bairro}</TextInput>
           </View>
-          <Text
-         
+          <TextInput
+            
             style={[styles.campoTelefone, styles.campo]}
-           
-          >{cidade}</Text>
+            clearButtonMode='always'
+            onChangeText={cidadeMudou}
+            editable={isEditable}
+
+          >{cidade}</TextInput>
         </View>
         <View style={styles.areaBtn}>
-          <TouchableOpacity onPress={props.onClose}
+
+          <TouchableOpacity onPress={() => { onApagar(id) }}
+            style={styles.btnFechar}><Text style={styles.btnFecharTxt}>Apagar</Text></TouchableOpacity>
+
+          <TouchableOpacity onPress={tornarEditavel}
+            style={styles.btnFechar}><Text style={styles.btnFecharTxt}>{btnSalvarTxt}</Text></TouchableOpacity>
+        </View>
+        <TouchableOpacity onPress={props.onClose}
           style={styles.btnFechar}><Text style={styles.btnFecharTxt}>Fechar</Text></TouchableOpacity>
 
-<TouchableOpacity onPress={()=>{onApagar(id)}}
-          style={styles.btnFechar}><Text style={styles.btnFecharTxt}>Apagar</Text></TouchableOpacity>
-       </View>
+
       </ScrollView>
     </View >
   );
@@ -176,7 +374,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     height: '70%',
     marginLeft: 20,
-    
 
   },
   campoNome: {
@@ -185,9 +382,9 @@ const styles = StyleSheet.create({
     height: '40%',
     fontSize: 15,
     fontWeight: 'bold',
+
     borderColor: '#fff',
     borderWidth: 1,
-    paddingTop: 7,
   },
   campoSobrenome: {
     textAlign: 'center',
@@ -198,8 +395,6 @@ const styles = StyleSheet.create({
     marginTop: 30,
     borderColor: '#fff',
     borderWidth: 1,
-    paddingTop: 7,
-
   },
   camposContato: {
     flex: 1,
@@ -207,9 +402,11 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     marginTop: 30,
     height: '100%',
+
+
   },
   campoTelefone: {
-    textAlign: 'center',    
+    textAlign: 'center',
 
   },
   nrBairro: {
@@ -222,9 +419,7 @@ const styles = StyleSheet.create({
     width: '57%',
     height: 40,
     backgroundColor: '#D9D9D9',
-    textAlign: 'center',
-    paddingTop: 10,
-    
+    textAlign: 'center'
   },
   campoNr: {
     marginTop: 10,
@@ -235,7 +430,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#D9D9D9',
     marginRight: 10,
     textAlign: 'center',
-    paddingTop: 10,
   },
   campo: {
     marginTop: 10,
@@ -243,11 +437,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: '80%',
     height: 40,
-    backgroundColor: '#D9D9D9',
-    paddingTop: 10,
+    backgroundColor: '#D9D9D9'
   },
   campoDinamico: {
     flexDirection: 'row',
+  },
+  btnAdd: {
+    width: '5%',
+    borderColor: '#fff',
+    borderWidth: 1,
+    height: 40,
   },
   areaBtn: {
     flexDirection: 'row',

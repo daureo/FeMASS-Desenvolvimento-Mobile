@@ -9,19 +9,19 @@ import * as ImagePicker from 'expo-image-picker';
 
 export default function AppCadastro() {
 
-//Poderia ser feito com classes?
-const [id, setID] = useState();
-const [foto, setFoto] = useState();
-const [nome, setNome] = useState();
-const [sobrenome, setSobrenome] = useState();
-const telefone = [];
-const email = [];
-const [endereco, setEndereco] = useState();
-const [numero, setNumero] = useState();
-const [bairro, setBairro] = useState();
-const [cidade, setCidade] = useState();
+  //Poderia ser feito com classes?
+  const [id, setID] = useState();
+  const [foto, setFoto] = useState();
+  const [nome, setNome] = useState();
+  const [sobrenome, setSobrenome] = useState();
+  const telefone = [];
+  const email = [];
+  const [endereco, setEndereco] = useState();
+  const [numero, setNumero] = useState();
+  const [bairro, setBairro] = useState();
+  const [cidade, setCidade] = useState();
 
-const [refresh, setRefresh] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
 
   const pickImage = async () => {
@@ -33,10 +33,10 @@ const [refresh, setRefresh] = useState(false);
       quality: 1,
     });
 
-    
+
 
     if (!result.canceled) {
-     fotoMudou(result.assets[0].uri);
+      fotoMudou(result.assets[0].uri);
     }
   };
 
@@ -44,40 +44,40 @@ const [refresh, setRefresh] = useState(false);
 
     let permissaoCamera = await ImagePicker.requestCameraPermissionsAsync();
 
-    
-    if(permissaoCamera.granted === false){
+
+    if (permissaoCamera.granted === false) {
       alert("Você negou a permissão da câmera");
       return;
     }
 
-    try{
+    try {
       let result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 3],
         quality: 1,
       });
-      
-  
+
+
       if (!result.canceled) {
-       fotoMudou(result.assets[0].uri);
-      
+        fotoMudou(result.assets[0].uri);
+
       }
     } catch (error) {
       console.log(error);
     }
-    
+
 
   };
 
-  function manipularImagem(){
+  function manipularImagem() {
     Alert.alert(
       "Adicionar Foto",
       "Informe de onde você quer adicionar a foto",
       [
         {
           text: "Galeria",
-          onPress: () => { pickImage()  },
+          onPress: () => { pickImage() },
           style: 'default'
         },
         {
@@ -93,84 +93,97 @@ const [refresh, setRefresh] = useState(false);
     );
   }
 
-  function idMudou(){
+  function idMudou() {
     setID();
   }
 
-  function fotoMudou(foto){
+  function fotoMudou(foto) {
     setFoto(foto);
   }
 
-  function nomeMudou(nome){
-    setNome(nome);    
+  function nomeMudou(nome) {
+    setNome(nome);
   }
 
-  function sobrenomeMudou(sobrenome){
-    setSobrenome(sobrenome);    
+  function sobrenomeMudou(sobrenome) {
+    setSobrenome(sobrenome);
   }
 
   //TelefoneMudou fica implementado dentro do componente
   //EmailMudou fica implementado dentro do componente
 
-  function enderecoMudou(endereco){
+  function enderecoMudou(endereco) {
     setEndereco(endereco);
   }
 
-  function numeroMudou(numero){
+  function numeroMudou(numero) {
     setNumero(numero);
   }
 
-  function bairroMudou(bairro){
+  function bairroMudou(bairro) {
     setBairro(bairro);
   }
 
-  function limparCampos(){
-    
-      setID(null);
-      setFoto(null);
-      setNome(null);
-      setSobrenome(null);
-      
-      telefone.forEach((telefone, index) => {
-        telefone.ref.current.setTelefone('');
-        telefone.ref.current.setTipo('casa');
-      });
-      email.forEach((email, index) => {
-        email.ref.current.setEmail('');
-        email.ref.current.setTipo('pessoal');
-      });
+  
 
-      setEndereco(null);
-      setNumero(null);
-      setBairro(null);
-      setCidade(null);
-      setRefresh(!refresh); // set refresh to true to trigger a re-render of the component
-   
-    
-    
+  function limparCampos() {
+
+    setID(null);
+    setFoto(null);
+    setNome(null);
+    setSobrenome(null);
+
+    telefone.forEach((telefone, index) => {
+      telefone.ref.current.setTelefone('');
+      telefone.ref.current.setTipo('casa');
+    });
+    email.forEach((email, index) => {
+      email.ref.current.setEmail('');
+      email.ref.current.setTipo('pessoal');
+    });
+
+    setEndereco(null);
+    setNumero(null);
+    setBairro(null);
+    setCidade(null);
+    setRefresh(!refresh);
+
+
+
   }
 
-  function cidadeMudou(cidade){
+  function cidadeMudou(cidade) {
     setCidade(cidade);
   }
 
-  async  function salvarContato(){
-    //validar os campos!!!
-    const contatoSalvo = {id: new Date().getTime(), nome, sobrenome, telefone, email, endereco, numero, bairro, cidade, foto};
-    let listaContatos = [];
-
-    const response = await AsyncStorage.getItem('listaContatos');
-
-    if (response) listaContatos = JSON.parse(response);
-
-    listaContatos.push(contatoSalvo);    
-
-    await AsyncStorage.setItem('listaContatos', JSON.stringify(listaContatos));
+  function validarCampos() {
+    if (!nome || !sobrenome || !endereco || !numero || !bairro || !cidade) {
+      Alert.alert("Preencha todos os campos obrigatórios");
+      return false;
+    }
+    return true;
+  }
   
-    limparCampos();
+
+  async function salvarContato() {
+
+    if (validarCampos()) {
+      const contatoSalvo = { id: new Date().getTime(), nome, sobrenome, telefone, email, endereco, numero, bairro, cidade, foto };
+      let listaContatos = [];
+
+      const response = await AsyncStorage.getItem('listaContatos');
+
+      if (response) listaContatos = JSON.parse(response);
+
+      listaContatos.push(contatoSalvo);
+
+      await AsyncStorage.setItem('listaContatos', JSON.stringify(listaContatos));
+
+      limparCampos();
 
       Alert.alert("Novo Contato Salvo!");
-    
+    }
+
   }
 
 
@@ -181,28 +194,28 @@ const [refresh, setRefresh] = useState(false);
       <ScrollView>
         <View style={styles.cabecalho}>
           <TouchableOpacity
-          onPress={()=> manipularImagem()}
+            onPress={() => manipularImagem()}
           >
             <Image
-            style={styles.foto}
-            source={ foto ?  {uri: foto} : require('../../assets/photoIcon.png') }
-            
-          /></TouchableOpacity>
+              style={styles.foto}
+              source={foto ? { uri: foto } : require('../../assets/photoIcon.png')}
+
+            /></TouchableOpacity>
           <View style={styles.nomeContainer}>
 
             <TextInput style={styles.campoNome}
-              
+
               placeholder='Nome'
               clearButtonMode='always'
               onChangeText={nomeMudou}
-              >                
-              </TextInput>
+            >
+            </TextInput>
 
             <TextInput style={styles.campoSobrenome}
               placeholder='Sobrenome'
               clearButtonMode='always'
-              onChangeText={sobrenomeMudou}>                
-              </TextInput>
+              onChangeText={sobrenomeMudou}>
+            </TextInput>
           </View>
         </View>
         <View style={styles.camposContato}>
@@ -219,13 +232,13 @@ const [refresh, setRefresh] = useState(false);
               placeholder='Nº'
               style={[styles.campoNr]}
               clearButtonMode='always'
-            onChangeText={numeroMudou}
+              onChangeText={numeroMudou}
             ></TextInput>
             <TextInput
               placeholder='Bairro'
               style={[styles.campoBairro]}
               clearButtonMode='always'
-            onChangeText={bairroMudou}
+              onChangeText={bairroMudou}
             ></TextInput>
           </View>
           <TextInput
@@ -236,7 +249,7 @@ const [refresh, setRefresh] = useState(false);
           ></TextInput>
         </View>
         <TouchableOpacity style={styles.btnSalvar}
-        onPress={salvarContato}
+          onPress={salvarContato}
         >
           <Text style={styles.btnSalvarTxt}>Salvar</Text>
         </TouchableOpacity>
