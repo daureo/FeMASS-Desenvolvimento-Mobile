@@ -14,14 +14,15 @@ export default function AppCadastro() {
   const [foto, setFoto] = useState();
   const [nome, setNome] = useState();
   const [sobrenome, setSobrenome] = useState();
-  const telefone = [];
-  const email = [];
+  const [telefones, setTelefones] = useState(['']);
+  const [emails, setEmails] = useState(['']);
   const [endereco, setEndereco] = useState();
   const [numero, setNumero] = useState();
   const [bairro, setBairro] = useState();
   const [cidade, setCidade] = useState();
 
   const [refresh, setRefresh] = useState(false);
+
 
 
   const pickImage = async () => {
@@ -109,7 +110,18 @@ export default function AppCadastro() {
     setSobrenome(sobrenome);
   }
 
-  //TelefoneMudou fica implementado dentro do componente
+  function handleChangeText(text, index) {
+    const novosTelefones = [...telefones];
+    novosTelefones[index] = text;
+    setTelefones(novosTelefones);
+    console.log(telefones);
+  }
+
+  function handleAddTelefone() {
+    const novosTelefones = [...telefones, ''];
+    setTelefones(novosTelefones);
+  }
+
   //EmailMudou fica implementado dentro do componente
 
   function enderecoMudou(endereco) {
@@ -124,24 +136,15 @@ export default function AppCadastro() {
     setBairro(bairro);
   }
 
-  
-
+ 
   function limparCampos() {
 
     setID(null);
     setFoto(null);
     setNome(null);
     setSobrenome(null);
-
-    telefone.forEach((telefone, index) => {
-      telefone.ref.current.setTelefone('');
-      telefone.ref.current.setTipo('casa');
-    });
-    email.forEach((email, index) => {
-      email.ref.current.setEmail('');
-      email.ref.current.setTipo('pessoal');
-    });
-
+    setEmails(['']);
+    setTelefones(['']);
     setEndereco(null);
     setNumero(null);
     setBairro(null);
@@ -163,12 +166,12 @@ export default function AppCadastro() {
     }
     return true;
   }
-  
+
 
   async function salvarContato() {
 
     if (validarCampos()) {
-      const contatoSalvo = { id: new Date().getTime(), nome, sobrenome, telefone, email, endereco, numero, bairro, cidade, foto };
+      const contatoSalvo = { id: new Date().getTime(), nome, sobrenome, telefones, emails, endereco, numero, bairro, cidade, foto };
       let listaContatos = [];
 
       const response = await AsyncStorage.getItem('listaContatos');
@@ -180,6 +183,7 @@ export default function AppCadastro() {
       await AsyncStorage.setItem('listaContatos', JSON.stringify(listaContatos));
 
       limparCampos();
+      console.log(contatoSalvo);
 
       Alert.alert("Novo Contato Salvo!");
     }
@@ -219,8 +223,23 @@ export default function AppCadastro() {
           </View>
         </View>
         <View style={styles.camposContato}>
-          <CompTelefone></CompTelefone>
-          <CompEmail></CompEmail>
+
+        
+            {telefones.map((telefone, index) => (
+              <View key={index}>
+                <TextInput
+                style={styles.campoTelefone}
+                  value={telefone}
+                  onChangeText={(text) => handleChangeText(text, index)}
+                  placeholder='Telefone' />
+              </View>
+            ))
+            }
+            <TouchableOpacity style={styles.btnAdd} onPress={handleAddTelefone}>
+              <Text style={styles.btnAddText}>+</Text>
+            </TouchableOpacity>
+          
+
           <TextInput
             placeholder='Endereço'
             style={[styles.campoTelefone, styles.campo]}
@@ -264,6 +283,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E5E5',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  containerTelefone: {
+    flex: 1,
+    backgroundColor: '#E5E5E5',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
   },
   cabecalho: {
     flex: 1,
@@ -316,7 +342,13 @@ const styles = StyleSheet.create({
 
   },
   campoTelefone: {
-    textAlign: 'center',
+    marginTop: 10,
+    borderColor: '#fff',
+    borderWidth: 1,
+    width: 280,
+    height: 40,
+    backgroundColor: '#D9D9D9',
+    textAlign: 'center'
 
   },
   nrBairro: {

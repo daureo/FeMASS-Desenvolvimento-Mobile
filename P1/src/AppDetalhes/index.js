@@ -14,8 +14,8 @@ export default function AppDetalhes(props) {
   const [foto, setFoto] = useState();
   const [nome, setNome] = useState();
   const [sobrenome, setSobrenome] = useState();
-  const telefone = [];
-  const email = [];
+  const [telefones, setTelefones] = useState(['']);
+  const [emails, setEmails] = useState(['']);
   const [endereco, setEndereco] = useState();
   const [numero, setNumero] = useState();
   const [bairro, setBairro] = useState();
@@ -40,8 +40,8 @@ export default function AppDetalhes(props) {
       setFoto(contato.foto);
       setNome(contato.nome);
       setSobrenome(contato.sobrenome);
-      //Telefone
-      //Email
+      setTelefones(contato.telefones);
+      setEmails(contato.emails);
       setEndereco(contato.endereco);
       setNumero(contato.numero);
       setBairro(contato.bairro);
@@ -186,9 +186,17 @@ export default function AppDetalhes(props) {
   function sobrenomeMudou(sobrenome) {
     setSobrenome(sobrenome);
   }
+  function handleChangeText(text, index) {
+    const novosTelefones = [...telefones];
+    novosTelefones[index] = text;
+    setTelefones(novosTelefones);
+    console.log(telefones);
+  }
 
-  //TelefoneMudou fica implementado dentro do componente
-  //EmailMudou fica implementado dentro do componente
+  function handleAddTelefone() {
+    const novosTelefones = [...telefones, ''];
+    setTelefones(novosTelefones);
+  }
 
   function enderecoMudou(endereco) {
     setEndereco(endereco);
@@ -202,31 +210,6 @@ export default function AppDetalhes(props) {
     setBairro(bairro);
   }
 
-  function limparCampos() {
-
-    setID(null);
-    setFoto(null);
-    setNome(null);
-    setSobrenome(null);
-
-    telefone.forEach((telefone, index) => {
-      telefone.ref.current.setTelefone('');
-      telefone.ref.current.setTipo('casa');
-    });
-    email.forEach((email, index) => {
-      email.ref.current.setEmail('');
-      email.ref.current.setTipo('pessoal');
-    });
-
-    setEndereco(null);
-    setNumero(null);
-    setBairro(null);
-    setCidade(null);
-    setRefresh(!refresh);
-
-
-
-  }
 
   function cidadeMudou(cidade) {
     setCidade(cidade);
@@ -235,7 +218,7 @@ export default function AppDetalhes(props) {
   async function atualizarContato() {
     //validar os campos!!!
 
-    const contatoSalvo = { id, nome, sobrenome, telefone, email, endereco, numero, bairro, cidade, foto };
+    const contatoSalvo = { id, nome, sobrenome, telefones, emails, endereco, numero, bairro, cidade, foto };
     let listaContatos = [];
 
     const response = await AsyncStorage.getItem('listaContatos');
@@ -297,8 +280,25 @@ export default function AppDetalhes(props) {
           </View>
         </View>
         <View style={styles.camposContato}>
-          <CompTelefone></CompTelefone>
-          <CompEmail></CompEmail>
+          {telefones.map((telefone, index) => (
+            <View key={index}>
+              <TextInput
+                style={styles.campoTelefone}
+                value={telefone}
+                onChangeText={(text) => handleChangeText(text, index)}
+                placeholder='Telefone'
+                editable={isEditable} />
+            </View>
+          ))
+          }
+          {isEditable ? (<TouchableOpacity style={styles.btnAdd} onPress={handleAddTelefone}
+            disabled={!isEditable}
+          >
+            <Text style={styles.btnAddTxt}>+</Text>
+          </TouchableOpacity>) : (null) }
+
+          
+
           <TextInput
 
             style={[styles.campoTelefone, styles.campo]}
@@ -308,14 +308,14 @@ export default function AppDetalhes(props) {
           >{endereco}</TextInput>
           <View style={styles.nrBairro}>
             <TextInput
-              
+
               style={[styles.campoNr]}
               clearButtonMode='always'
               onChangeText={numeroMudou}
               editable={isEditable}
             >{numero}</TextInput>
             <TextInput
-              
+
               style={[styles.campoBairro]}
               clearButtonMode='always'
               onChangeText={bairroMudou}
@@ -323,7 +323,7 @@ export default function AppDetalhes(props) {
             >{bairro}</TextInput>
           </View>
           <TextInput
-            
+
             style={[styles.campoTelefone, styles.campo]}
             clearButtonMode='always'
             onChangeText={cidadeMudou}
@@ -406,8 +406,13 @@ const styles = StyleSheet.create({
 
   },
   campoTelefone: {
+    marginTop: 10,
+    borderColor: '#fff',
+    borderWidth: 1,
+    width: 280,
+    height: 40,
+    backgroundColor: '#D9D9D9',
     textAlign: 'center',
-
   },
   nrBairro: {
     flexDirection: 'row',
@@ -443,10 +448,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   btnAdd: {
-    width: '5%',
+    width: '80%',
     borderColor: '#fff',
     borderWidth: 1,
     height: 40,
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
+  btnAddTxt: {
+    width: '100%',
+    textAlign: 'center',
   },
   areaBtn: {
     flexDirection: 'row',
