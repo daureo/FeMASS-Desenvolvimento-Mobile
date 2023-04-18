@@ -198,6 +198,18 @@ export default function AppDetalhes(props) {
     setTelefones(novosTelefones);
   }
 
+  function handleChangeEmailText(text, index) {
+    const novosEmails = [...emails];
+    novosEmails[index] = text;
+    setEmails(novosEmails);
+
+  }
+
+  function handleAddEmail() {
+    const novosEmails = [...emails, ''];
+    setEmails(novosEmails);
+  }
+
   function enderecoMudou(endereco) {
     setEndereco(endereco);
   }
@@ -295,9 +307,25 @@ export default function AppDetalhes(props) {
             disabled={!isEditable}
           >
             <Text style={styles.btnAddTxt}>+</Text>
-          </TouchableOpacity>) : (null) }
+          </TouchableOpacity>) : (null)}
 
-          
+          {emails.map((email, index) => (
+            <View key={index}>
+              <TextInput
+                style={styles.campoTelefone}
+                value={email}
+                onChangeText={(text) => handleChangeEmailText(text, index)}
+                placeholder='E-mail'
+                editable={isEditable} />
+            </View>
+          ))
+          }
+          {isEditable ? (<TouchableOpacity style={styles.btnAdd} onPress={handleAddEmail}
+            disabled={!isEditable}
+          >
+            <Text style={styles.btnAddTxt}>+</Text>
+          </TouchableOpacity>) : (null)}
+
 
           <TextInput
 

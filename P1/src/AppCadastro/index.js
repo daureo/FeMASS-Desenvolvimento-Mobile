@@ -110,11 +110,11 @@ export default function AppCadastro() {
     setSobrenome(sobrenome);
   }
 
-  function handleChangeText(text, index) {
+  function handleChangeTelText(text, index) {
     const novosTelefones = [...telefones];
     novosTelefones[index] = text;
     setTelefones(novosTelefones);
-    console.log(telefones);
+    
   }
 
   function handleAddTelefone() {
@@ -122,7 +122,19 @@ export default function AppCadastro() {
     setTelefones(novosTelefones);
   }
 
-  //EmailMudou fica implementado dentro do componente
+  function handleChangeEmailText(text, index) {
+    const novosEmails = [...emails];
+    novosEmails[index] = text;
+    setEmails(novosEmails);
+    
+  }
+
+  function handleAddEmail() {
+    const novosEmails = [...emails, ''];
+    setEmails(novosEmails);
+  }
+
+  
 
   function enderecoMudou(endereco) {
     setEndereco(endereco);
@@ -230,12 +242,26 @@ export default function AppCadastro() {
                 <TextInput
                 style={styles.campoTelefone}
                   value={telefone}
-                  onChangeText={(text) => handleChangeText(text, index)}
+                  onChangeText={(text) => handleChangeTelText(text, index)}
                   placeholder='Telefone' />
               </View>
             ))
             }
             <TouchableOpacity style={styles.btnAdd} onPress={handleAddTelefone}>
+              <Text style={styles.btnAddText}>+</Text>
+            </TouchableOpacity>
+
+            {emails.map((email, index) => (
+              <View key={index}>
+                <TextInput
+                style={styles.campoTelefone}
+                  value={email}
+                  onChangeText={(text) => handleChangeEmailText(text, index)}
+                  placeholder='E-mail' />
+              </View>
+            ))
+            }
+            <TouchableOpacity style={styles.btnAdd} onPress={handleAddEmail}>
               <Text style={styles.btnAddText}>+</Text>
             </TouchableOpacity>
           
