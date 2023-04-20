@@ -54,11 +54,9 @@ export default function AppDetalhes(props) {
   function tornarEditavel() {
     if (!isEditable) {
       setBtnSalvarTxt("Salvar");
-      console.log("EntrouemS " + isEditable);
     }
     else {
       setBtnSalvarTxt("Editar");
-      console.log("EntrouemE " + isEditable);
       atualizarContato();
     }
     setIsEditable(!isEditable);
@@ -69,10 +67,32 @@ export default function AppDetalhes(props) {
     setRefresh(!refresh);
   }
 
-  async function onApagar(id) {
+  function onApagar(id) {
 
 
-    const response = await AsyncStorage.getItem('listaContatos');
+    Alert.alert(
+      "Apagar Contato!",
+      "Você tem certeza que deseja prosseguir?",
+      [
+        {
+          text: "Sim",
+          onPress: () => { apagar(id) },
+          style: 'default'
+        },
+        {
+          text: "Não",
+          onPress: () => { null },
+          style: 'default'
+        },
+      ],
+      {
+        cancelable: true,
+        
+      }
+    );
+
+    async function apagar(id){
+      const response = await AsyncStorage.getItem('listaContatos');
 
     if (response) {
 
@@ -88,6 +108,8 @@ export default function AppDetalhes(props) {
     Alert.alert("Contato Apagado!");
     props.onClose();
 
+    }
+    
   }
 
   useEffect(() => {
@@ -147,7 +169,7 @@ export default function AppDetalhes(props) {
 
   function manipularImagem() {
     if (this.editable == false) {
-      console.log("Nao editavel");
+      
     }
     Alert.alert(
       "Adicionar Foto",
@@ -166,7 +188,7 @@ export default function AppDetalhes(props) {
       ],
       {
         cancelable: true,
-        onDismiss: () => console.log("Cancelado"),
+        
       }
     );
   }
@@ -189,13 +211,19 @@ export default function AppDetalhes(props) {
   function handleChangeText(text, index) {
     const novosTelefones = [...telefones];
     novosTelefones[index] = text;
-    setTelefones(novosTelefones);
-    console.log(telefones);
+    setTelefones(novosTelefones);    
   }
 
   function handleAddTelefone() {
     const novosTelefones = [...telefones, ''];
     setTelefones(novosTelefones);
+  }
+
+  function handleDelTelefone(indexToRemove) {
+    setTelefones((prevTels) => {
+      const novosTels = prevTels.filter((_, index) => index !== indexToRemove);
+      return novosTels;
+    });
   }
 
   function handleChangeEmailText(text, index) {
@@ -208,6 +236,13 @@ export default function AppDetalhes(props) {
   function handleAddEmail() {
     const novosEmails = [...emails, ''];
     setEmails(novosEmails);
+  }
+
+  function handleDelEmail(indexToRemove) {
+    setEmails((prevEmails) => {
+      const novosEmails = prevEmails.filter((_, index) => index !== indexToRemove);
+      return novosEmails;
+    });
   }
 
   function enderecoMudou(endereco) {
@@ -254,7 +289,7 @@ export default function AppDetalhes(props) {
 
     Alert.alert("Alteração no Contato Concluida!");
 
-    console.log(listaAtualizada);
+    
   }
 
 
@@ -293,13 +328,18 @@ export default function AppDetalhes(props) {
         </View>
         <View style={styles.camposContato}>
           {telefones.map((telefone, index) => (
-            <View key={index}>
+            <View key={index} style={styles.viewDinamica}>
               <TextInput
                 style={styles.campoTelefone}
                 value={telefone}
                 onChangeText={(text) => handleChangeText(text, index)}
                 placeholder='Telefone'
                 editable={isEditable} />
+              {telefones.length > 1 && (
+                isEditable ? (<TouchableOpacity style={styles.btnDel} onPress={() => { handleDelTelefone(index) }}>
+                  <Text style={styles.btnDelText}>-</Text>
+                </TouchableOpacity>) : (null))
+              }
             </View>
           ))
           }
@@ -310,13 +350,18 @@ export default function AppDetalhes(props) {
           </TouchableOpacity>) : (null)}
 
           {emails.map((email, index) => (
-            <View key={index}>
+            <View key={index} style={styles.viewDinamica}>
               <TextInput
                 style={styles.campoTelefone}
                 value={email}
                 onChangeText={(text) => handleChangeEmailText(text, index)}
                 placeholder='E-mail'
                 editable={isEditable} />
+              {emails.length > 1 && (
+                isEditable ? (<TouchableOpacity style={styles.btnDel} onPress={() => { handleDelEmail(index) }}>
+                  <Text style={styles.btnDelText}>-</Text>
+                </TouchableOpacity>) : (null))
+              }
             </View>
           ))
           }
@@ -430,14 +475,15 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     marginTop: 30,
     height: '100%',
-
-
+  },
+  viewDinamica: {
+    flexDirection: 'row'
   },
   campoTelefone: {
     marginTop: 10,
     borderColor: '#fff',
     borderWidth: 1,
-    width: 280,
+    width: 250,
     height: 40,
     backgroundColor: '#D9D9D9',
     textAlign: 'center',
@@ -476,14 +522,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   btnAdd: {
-    width: '80%',
+    width: '71%',
     borderColor: '#fff',
     borderWidth: 1,
     height: 40,
     justifyContent: 'center',
     alignContent: 'center',
+    marginTop: 5,
   },
   btnAddTxt: {
+    width: '100%',
+    textAlign: 'center',
+  },
+  btnDel: {
+    width: '10%',
+    borderColor: '#fff',
+    borderWidth: 1,
+    height: 30,
+    textAlign: 'center',
+    alignSelf: 'center',
+    marginLeft: 5
+  },
+  btnDelText: {
     width: '100%',
     textAlign: 'center',
   },

@@ -114,7 +114,7 @@ export default function AppCadastro() {
     const novosTelefones = [...telefones];
     novosTelefones[index] = text;
     setTelefones(novosTelefones);
-    
+
   }
 
   function handleAddTelefone() {
@@ -122,11 +122,18 @@ export default function AppCadastro() {
     setTelefones(novosTelefones);
   }
 
+  function handleDelTelefone(indexToRemove) {    
+    setTelefones((prevTels) => {
+      const novosTels = prevTels.filter((_, index) => index !== indexToRemove);
+      return novosTels;
+    });
+  }
+
   function handleChangeEmailText(text, index) {
     const novosEmails = [...emails];
     novosEmails[index] = text;
     setEmails(novosEmails);
-    
+
   }
 
   function handleAddEmail() {
@@ -134,7 +141,12 @@ export default function AppCadastro() {
     setEmails(novosEmails);
   }
 
-  
+  function handleDelEmail(indexToRemove) {
+    setEmails((prevEmails) => {
+      const novosEmails = prevEmails.filter((_, index) => index !== indexToRemove);
+      return novosEmails;
+    });
+  }
 
   function enderecoMudou(endereco) {
     setEndereco(endereco);
@@ -148,7 +160,7 @@ export default function AppCadastro() {
     setBairro(bairro);
   }
 
- 
+
   function limparCampos() {
 
     setID(null);
@@ -195,8 +207,7 @@ export default function AppCadastro() {
       await AsyncStorage.setItem('listaContatos', JSON.stringify(listaContatos));
 
       limparCampos();
-      console.log(contatoSalvo);
-
+      
       Alert.alert("Novo Contato Salvo!");
     }
 
@@ -236,35 +247,45 @@ export default function AppCadastro() {
         </View>
         <View style={styles.camposContato}>
 
-        
-            {telefones.map((telefone, index) => (
-              <View key={index}>
-                <TextInput
-                style={styles.campoTelefone}
-                  value={telefone}
-                  onChangeText={(text) => handleChangeTelText(text, index)}
-                  placeholder='Telefone' />
-              </View>
-            ))
-            }
-            <TouchableOpacity style={styles.btnAdd} onPress={handleAddTelefone}>
-              <Text style={styles.btnAddText}>+</Text>
-            </TouchableOpacity>
 
-            {emails.map((email, index) => (
-              <View key={index}>
-                <TextInput
+          {telefones.map((telefone, index) => (
+            <View key={index} style={styles.viewDinamica}>
+              <TextInput
                 style={styles.campoTelefone}
-                  value={email}
-                  onChangeText={(text) => handleChangeEmailText(text, index)}
-                  placeholder='E-mail' />
-              </View>
-            ))
-            }
-            <TouchableOpacity style={styles.btnAdd} onPress={handleAddEmail}>
-              <Text style={styles.btnAddText}>+</Text>
-            </TouchableOpacity>
-          
+                value={telefone}
+                onChangeText={(text) => handleChangeTelText(text, index)}
+                placeholder='Telefone' />
+              {telefones.length > 1 && (
+                <TouchableOpacity style={styles.btnDel} onPress={()=>{handleDelTelefone(index)}}>
+                  <Text style={styles.btnDelText}>-</Text>
+                </TouchableOpacity>)
+              }
+            </View>
+          ))
+          }
+          <TouchableOpacity style={styles.btnAdd} onPress={handleAddTelefone}>
+            <Text style={styles.btnAddText}>+</Text>
+          </TouchableOpacity>
+
+          {emails.map((email, index) => (
+            <View key={index} style={styles.viewDinamica}>
+              <TextInput
+                style={styles.campoTelefone}
+                value={email}
+                onChangeText={(text) => handleChangeEmailText(text, index)}
+                placeholder='E-mail' />
+              {emails.length > 1 && (
+                <TouchableOpacity style={styles.btnDel} onPress={()=>{handleDelEmail(index)}}>
+                  <Text style={styles.btnDelText}>-</Text>
+                </TouchableOpacity>)
+              }
+            </View>
+          ))
+          }
+          <TouchableOpacity style={styles.btnAdd} onPress={handleAddEmail}>
+            <Text style={styles.btnAddText}>+</Text>
+          </TouchableOpacity>
+
 
           <TextInput
             placeholder='Endereço'
@@ -367,15 +388,17 @@ const styles = StyleSheet.create({
 
 
   },
+  viewDinamica: {
+    flexDirection: 'row'
+  },
   campoTelefone: {
     marginTop: 10,
     borderColor: '#fff',
     borderWidth: 1,
-    width: 280,
+    width: 250,
     height: 40,
     backgroundColor: '#D9D9D9',
-    textAlign: 'center'
-
+    textAlign: 'center',
   },
   nrBairro: {
     flexDirection: 'row',
@@ -411,10 +434,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   btnAdd: {
-    width: '5%',
+    width: '71%',
     borderColor: '#fff',
     borderWidth: 1,
     height: 40,
+    textAlign: 'center',
+    alignContent: 'center',
+    marginTop: 5,
+  },
+  btnAddText: {
+    width: '100%',
+    textAlign: 'center',
+  },
+  btnDel: {
+    width: '10%',
+    borderColor: '#fff',
+    borderWidth: 1,
+    height: 30,
+    textAlign: 'center',
+    alignSelf: 'center',
+    marginLeft: 5
+  },
+  btnDelText: {
+    width: '100%',
+    textAlign: 'center',
   },
   btnSalvarTxt: {
     color: '#fff'
