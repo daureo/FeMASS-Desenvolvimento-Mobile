@@ -62,6 +62,7 @@ export default function AppLista() {
         <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.itemsContainer}
+        
       >
         {listaContatos.map(item => {
           return <TouchableOpacity

@@ -266,7 +266,7 @@ export default function AppDetalhes(props) {
         <View style={styles.cabecalho}>
           <TouchableOpacity
             onPress={() => manipularImagem()}
-
+            disabled={!isEditable}
           >
             <Image
               style={styles.foto}
