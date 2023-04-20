@@ -1,7 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
 import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import CompTelefone from './CompTelefone';
-import CompEmail from './CompEmail';
 import { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
@@ -110,9 +108,19 @@ export default function AppCadastro() {
     setSobrenome(sobrenome);
   }
 
+  function formatPhoneNumber(phoneNumber) {
+    const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+    const ddd = cleaned.substring(0, 2);
+    const firstPart = cleaned.substring(2, 7);
+    const secondPart = cleaned.substring(7, 11);
+    const formattedPhoneNumber = `(${ddd})${firstPart}-${secondPart}`;
+    
+    return formattedPhoneNumber;
+  }
+
   function handleChangeTelText(text, index) {
     const novosTelefones = [...telefones];
-    novosTelefones[index] = text;
+    novosTelefones[index] = formatPhoneNumber(text);
     setTelefones(novosTelefones);
 
   }
@@ -122,7 +130,7 @@ export default function AppCadastro() {
     setTelefones(novosTelefones);
   }
 
-  function handleDelTelefone(indexToRemove) {    
+  function handleDelTelefone(indexToRemove) {
     setTelefones((prevTels) => {
       const novosTels = prevTels.filter((_, index) => index !== indexToRemove);
       return novosTels;
@@ -207,7 +215,7 @@ export default function AppCadastro() {
       await AsyncStorage.setItem('listaContatos', JSON.stringify(listaContatos));
 
       limparCampos();
-      
+
       Alert.alert("Novo Contato Salvo!");
     }
 
@@ -256,7 +264,7 @@ export default function AppCadastro() {
                 onChangeText={(text) => handleChangeTelText(text, index)}
                 placeholder='Telefone' />
               {telefones.length > 1 && (
-                <TouchableOpacity style={styles.btnDel} onPress={()=>{handleDelTelefone(index)}}>
+                <TouchableOpacity style={styles.btnDel} onPress={() => { handleDelTelefone(index) }}>
                   <Text style={styles.btnDelText}>-</Text>
                 </TouchableOpacity>)
               }
@@ -275,7 +283,7 @@ export default function AppCadastro() {
                 onChangeText={(text) => handleChangeEmailText(text, index)}
                 placeholder='E-mail' />
               {emails.length > 1 && (
-                <TouchableOpacity style={styles.btnDel} onPress={()=>{handleDelEmail(index)}}>
+                <TouchableOpacity style={styles.btnDel} onPress={() => { handleDelEmail(index) }}>
                   <Text style={styles.btnDelText}>-</Text>
                 </TouchableOpacity>)
               }

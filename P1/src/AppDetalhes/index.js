@@ -1,7 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
 import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import CompTelefone from '../AppCadastro/CompTelefone';
-import CompEmail from '../AppCadastro/CompEmail';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
@@ -208,9 +206,19 @@ export default function AppDetalhes(props) {
   function sobrenomeMudou(sobrenome) {
     setSobrenome(sobrenome);
   }
-  function handleChangeText(text, index) {
+
+  function formatPhoneNumber(phoneNumber) {
+    const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+    const ddd = cleaned.substring(0, 2);
+    const firstPart = cleaned.substring(2, 7);
+    const secondPart = cleaned.substring(7, 11);
+    const formattedPhoneNumber = `(${ddd})${firstPart}-${secondPart}`;
+    return formattedPhoneNumber;
+  }
+
+  function handleChangeTelText(text, index) {
     const novosTelefones = [...telefones];
-    novosTelefones[index] = text;
+    novosTelefones[index] = formatPhoneNumber(text);
     setTelefones(novosTelefones);    
   }
 
@@ -332,7 +340,7 @@ export default function AppDetalhes(props) {
               <TextInput
                 style={styles.campoTelefone}
                 value={telefone}
-                onChangeText={(text) => handleChangeText(text, index)}
+                onChangeText={(text) => handleChangeTelText(text, index)}
                 placeholder='Telefone'
                 editable={isEditable} />
               {telefones.length > 1 && (
