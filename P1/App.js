@@ -6,9 +6,8 @@ import AppTelas from './src/AppTelas';
 export default function App() {
   return (
     <>
-      
+      <StatusBar style="light-content" />
       <AppTelas></AppTelas>
-      <StatusBar style="light" />
       
     </>
   );

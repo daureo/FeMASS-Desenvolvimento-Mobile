@@ -5,6 +5,7 @@ import ItemLista from './ItemLista';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RefreshControl } from 'react-native-gesture-handler';
 import AppDetalhes from '../AppDetalhes';
+import { useCallback } from 'react';
 
 export default function AppLista() {
 //Criar funcoes para manipular os dados soh daqui.. nenhum componente acessa mais os dados...
@@ -23,11 +24,14 @@ export default function AppLista() {
       setListaContatos(listaOrdenada.sort((a, b) => a.nome.localeCompare(b.nome)));
     }
     
-  }
+  } 
 
-  function onRefresh() {
-    setRefresh(!refresh);
-  }
+  const onRefresh = useCallback(() => {
+    setRefresh(true);
+    carregarLista();
+    setRefresh(false);
+    
+  }, [refresh]);
 
   useEffect(() => {
 
@@ -53,7 +57,7 @@ export default function AppLista() {
   //usar essa id para passar a identificacao do contato para a tela de vizualizacao, que ira ler do banco somente aquele contato
   return (
     <View style={styles.container} key={refresh}>
-      <StatusBar style="light" />
+      <StatusBar style="light-content" />
 
       {mostrarViewDetalhes ? (
       <AppDetalhes onClose={onCloseSecondScrollView} detalhesContato={contatoDetalhado}/>      
@@ -62,6 +66,7 @@ export default function AppLista() {
         <ScrollView
         style={styles.scrollContainer}
         contentContainerStyle={styles.itemsContainer}
+        refreshControl={<RefreshControl refreshing={refresh} onRefresh={onRefresh} />}
         
       >
         {listaContatos.map(item => {

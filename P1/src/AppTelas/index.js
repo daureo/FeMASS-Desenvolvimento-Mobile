@@ -11,8 +11,9 @@ const { Navigator, Screen } = createBottomTabNavigator();
 
 export default function AppTelas() {
   return (
+    
     <NavigationContainer>
-      
+      <StatusBar style="light-content" />
       
       <Navigator
         screenOptions={{

@@ -21,6 +21,7 @@ export default function AppDetalhes(props) {
   const [refresh, setRefresh] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
   const [btnSalvarTxt, setBtnSalvarTxt] = useState("Editar");
+  const [btnApagarTxt, setBtnApagarTxt] = useState("Apagar");
 
 
   async function carregarContato(id) {
@@ -49,12 +50,27 @@ export default function AppDetalhes(props) {
 
   }
 
-  function tornarEditavel() {
+  function cancelarEdicao() {
     if (!isEditable) {
       setBtnSalvarTxt("Salvar");
+      setBtnApagarTxt("Cancelar");
     }
     else {
       setBtnSalvarTxt("Editar");
+      setBtnApagarTxt("Apagar");
+    }
+    setIsEditable(!isEditable);
+    
+  }
+
+  function tornarEditavel() {
+    if (!isEditable) {
+      setBtnSalvarTxt("Salvar");
+      setBtnApagarTxt("Cancelar");
+    }
+    else {
+      setBtnSalvarTxt("Editar");
+      setBtnApagarTxt("Apagar");
       atualizarContato();
     }
     setIsEditable(!isEditable);
@@ -85,29 +101,29 @@ export default function AppDetalhes(props) {
       ],
       {
         cancelable: true,
-        
+
       }
     );
 
-    async function apagar(id){
+    async function apagar(id) {
       const response = await AsyncStorage.getItem('listaContatos');
 
-    if (response) {
+      if (response) {
 
-      let lista = JSON.parse(response);
+        let lista = JSON.parse(response);
 
-      let contato = lista.find(obj => obj.id === id);
+        let contato = lista.find(obj => obj.id === id);
 
-      lista.splice(lista.indexOf(contato), 1);
+        lista.splice(lista.indexOf(contato), 1);
 
-      await AsyncStorage.setItem('listaContatos', JSON.stringify(lista));
+        await AsyncStorage.setItem('listaContatos', JSON.stringify(lista));
+
+      }
+      Alert.alert("Contato Apagado!");
+      props.onClose();
 
     }
-    Alert.alert("Contato Apagado!");
-    props.onClose();
 
-    }
-    
   }
 
   useEffect(() => {
@@ -167,7 +183,7 @@ export default function AppDetalhes(props) {
 
   function manipularImagem() {
     if (this.editable == false) {
-      
+
     }
     Alert.alert(
       "Adicionar Foto",
@@ -186,7 +202,7 @@ export default function AppDetalhes(props) {
       ],
       {
         cancelable: true,
-        
+
       }
     );
   }
@@ -219,7 +235,7 @@ export default function AppDetalhes(props) {
   function handleChangeTelText(text, index) {
     const novosTelefones = [...telefones];
     novosTelefones[index] = formatPhoneNumber(text);
-    setTelefones(novosTelefones);    
+    setTelefones(novosTelefones);
   }
 
   function handleAddTelefone() {
@@ -297,13 +313,13 @@ export default function AppDetalhes(props) {
 
     Alert.alert("Alteração no Contato Concluida!");
 
-    
+
   }
 
 
   return (
     <View style={styles.container} key={refresh}>
-      <StatusBar style="light" />
+      <StatusBar style="light-content" />
 
       <ScrollView>
         <View style={styles.cabecalho}>
@@ -320,7 +336,7 @@ export default function AppDetalhes(props) {
           <View style={styles.nomeContainer}>
 
             <TextInput style={styles.campoNome}
-
+              placeholder='Nome'
               clearButtonMode='always'
               onChangeText={nomeMudou}
               editable={isEditable}
@@ -328,7 +344,7 @@ export default function AppDetalhes(props) {
             </TextInput>
 
             <TextInput style={styles.campoSobrenome}
-
+              placeholder='Sobrenome'
               clearButtonMode='always'
               onChangeText={sobrenomeMudou}
               editable={isEditable}>{sobrenome}</TextInput>
@@ -381,7 +397,7 @@ export default function AppDetalhes(props) {
 
 
           <TextInput
-
+            placeholder='Endereço'
             style={[styles.campoTelefone, styles.campo]}
             clearButtonMode='always'
             onChangeText={enderecoMudou}
@@ -389,14 +405,14 @@ export default function AppDetalhes(props) {
           >{endereco}</TextInput>
           <View style={styles.nrBairro}>
             <TextInput
-
+              placeholder='Nº'
               style={[styles.campoNr]}
               clearButtonMode='always'
               onChangeText={numeroMudou}
               editable={isEditable}
             >{numero}</TextInput>
             <TextInput
-
+              placeholder='Bairro'
               style={[styles.campoBairro]}
               clearButtonMode='always'
               onChangeText={bairroMudou}
@@ -404,7 +420,7 @@ export default function AppDetalhes(props) {
             >{bairro}</TextInput>
           </View>
           <TextInput
-
+            placeholder='Cidade'
             style={[styles.campoTelefone, styles.campo]}
             clearButtonMode='always'
             onChangeText={cidadeMudou}
@@ -414,8 +430,8 @@ export default function AppDetalhes(props) {
         </View>
         <View style={styles.areaBtn}>
 
-          <TouchableOpacity onPress={() => { onApagar(id) }}
-            style={styles.btnFechar}><Text style={styles.btnFecharTxt}>Apagar</Text></TouchableOpacity>
+          <TouchableOpacity onPress={!isEditable ? () => { onApagar(id) } : cancelarEdicao}
+            style={styles.btnFechar}><Text style={styles.btnFecharTxt}>{btnApagarTxt}</Text></TouchableOpacity>
 
           <TouchableOpacity onPress={tornarEditavel}
             style={styles.btnFechar}><Text style={styles.btnFecharTxt}>{btnSalvarTxt}</Text></TouchableOpacity>

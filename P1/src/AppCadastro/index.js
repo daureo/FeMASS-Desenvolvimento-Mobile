@@ -224,7 +224,7 @@ export default function AppCadastro() {
 
   return (
     <View style={styles.container} key={refresh}>
-      <StatusBar style="light" />
+      <StatusBar style="light-content" />
 
       <ScrollView>
         <View style={styles.cabecalho}>
