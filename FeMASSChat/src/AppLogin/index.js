@@ -1,20 +1,45 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
-import AppCadastro from '../AppCadastro';
+import { Alert, StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import axios from 'axios'; 
+
 
 
 
 
 export default function AppLogin({ navigation }) {
 
-    const [username, setUsername] = useState('');
+    const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const [foto, setFoto] = useState();
+    const [hash, setHash] = useState('');
+    const API_URL = 'http://localhost:8080/';
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/user/${login}/${password}`);
 
+            setHash(response.data);
+
+            criarLocalStorage();
+
+            navigation.navigate('Main');
+
+
+            Alert.alert('Sucesso', 'Usuario logado com sucesso!');
+        } catch (error) {
+            // Handle any errors
+            console.error('Erro ao logar:', error);
+
+            // Example: Show an error message
+            Alert.alert('Erro', 'Falha ao entrar');
+        }
+        
     };
+
+    function criarLocalStorage(){
+        console.log(hash);
+    }
 
     const novoUsuario = () => {
         navigation.navigate('Cadastro');
@@ -25,13 +50,13 @@ export default function AppLogin({ navigation }) {
         <View style={styles.container}>
             <Image
                 style={styles.foto}
-                source={foto ? { uri: foto } : require('../../assets/logo-faculdade-femass.png')}
+                source={foto ? { uri: foto } : require('../../assets/pigeon.png')}
             />
             <Text style={styles.title}>Chat</Text>
             <TextInput
                 style={styles.input}
-                placeholder="Usuario"
-                onChangeText={setUsername}
+                placeholder="Login"
+                onChangeText={setLogin}
             />
             <TextInput
                 style={styles.input}
@@ -95,7 +120,7 @@ const styles = StyleSheet.create({
         width: 150,
         height: 100,
         marginTop: 30,
-        
+
         backgroundColor: '#fff',
     },
     linkText: {
