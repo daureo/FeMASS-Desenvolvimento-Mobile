@@ -1,80 +1,98 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text } from 'react-native';
+import axios from 'axios';
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AppLogin from './src/AppLogin';
 import AppCadastro from './src/AppCadastro';
 
 
+const API_URL = 'https://example.com/api'; // Replace with your API URL
 
+const HomeScreen = ({ navigation }) => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    checkLocalStorage();
+  }, []);
+
+  const checkLocalStorage = async () => {
+    try {
+      const userHash = await  AsyncStorage.getItem('userHash');
+      if (userHash) {
+        // User hash exists, check against API
+        const response = await axios.get(`${API_URL}/checkHash`, {
+          params: { userHash },
+        });
+        const isValidHash = response.data.isValid;
+        if (isValidHash) {
+          // Hash is valid, navigate to the main screen
+          navigation.navigate('Main');
+        } else {
+          // Hash is invalid, navigate to the login screen
+          navigation.navigate('Login');
+        }
+      } else {
+        // User hash doesn't exist, navigate to the login screen
+        navigation.navigate('Login');
+      }
+    } catch (error) {
+      console.error('Error checking local storage:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <View>
+        <Text>Carregando...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View>
+      <Text>Verificando dados locais...</Text>
+    </View>
+  );
+};
+
+const LoginScreen = ({navigation}) => {
+  return (
+    <AppLogin navigation={navigation}></AppLogin>
+  );
+};
+
+const MainScreen = () => {
+  return (
+    <View>
+      <Text>Main Screen</Text>
+    </View>
+  );
+};
+
+const CadastroScreen = ({navigation}) => {
+    return (
+        <AppCadastro navigation={navigation}></AppCadastro>
+    );
+};
+
+const AppNavigator = createStackNavigator(
+  {
+    Home: HomeScreen,
+    Login: LoginScreen,
+    Main: MainScreen,
+    Cadastro: CadastroScreen,
+  },
+  {
+    initialRouteName: 'Home',
+  }
+);
+
+const AppContainer = createAppContainer(AppNavigator);
 
 export default function App() {
-
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-
-    const handleLogin = () => {
-
-    };
-
-
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>FeMASS Chat</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Usuario"
-                onChangeText={setUsername}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Senha"
-                onChangeText={setPassword}
-                secureTextEntry={true}
-            />
-            <TouchableOpacity
-                style={styles.button}
-                onPress={handleLogin}
-            >
-                <Text style={styles.buttonText}>Entrar</Text>
-            </TouchableOpacity>
-            <AppCadastro></AppCadastro>
-        </View>
-    );
-
+  return <AppContainer />;
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-    input: {
-        width: 300,
-        height: 40,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 5,
-        padding: 10,
-        marginTop: 10,
-    },
-    button: {
-        width: 300,
-        height: 40,
-        backgroundColor: '#000',
-        color: '#fff',
-        borderRadius: 5,
-        marginTop: 10,
-    },
-    buttonText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        color: '#fff',
-        marginTop: 5,
-    },
-});

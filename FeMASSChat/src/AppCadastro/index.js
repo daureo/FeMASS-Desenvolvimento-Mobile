@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Alert, StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
+import axios from 'axios'; 
+
 
 
 export default function AppCadastro() {
@@ -12,6 +15,8 @@ export default function AppCadastro() {
     const [email, setEmail] = useState('');
     const [telefone, setTelefone] = useState('');
     const [hash, setHash] = useState('');
+    const [base64Image, setBase64Image] = useState('');
+    const API_URL = 'http://localhost:8080/';
 
     function manipularImagem() {
         Alert.alert(
@@ -47,17 +52,83 @@ export default function AppCadastro() {
 
 
         if (!result.canceled) {
-            fotoMudou(result.assets[0].uri);
+            const base64Image = await convertImageToBase64(result.uri);
+            fotoMudou(result.assets[0].uri, base64Image);
         }
     };
 
-    function fotoMudou(foto){
-        setFoto(foto);
-      }
+    const convertImageToBase64 = async (imageUri) => {
+        const base64Image = await FileSystem.readAsStringAsync(imageUri, {
+            encoding: FileSystem.EncodingType.Base64,
+        });
+        return base64Image;
+    }
 
-    const handleRegister = () => {
-        // TODO: Send the id, nome, apelido, avatar, senha, email, telefone, and hash to your backend server to register the user.
+    function novoID() {
+        setId(new Date().getMilliseconds);
+    }
+    function fotoMudou(foto, base64Image) {
+        setFoto(foto);
+        setBase64Image(base64Image);
+        
+    }
+    function nomeMudou(nome) {
+        setNome(nome);
+    }
+    function apelidoMudou(apelido) {
+        setApelido(apelido);
+    }
+    function senhaMudou(senha) {
+        setSenha(senha);
+    }
+    function emailMudou(email) {
+        setEmail(email);
+    }
+    function telefoneMudou(telefone) {
+        setTelefone(formatPhoneNumber(telefone));
+    }
+
+    function formatPhoneNumber(phoneNumber) {
+        const cleaned = ('' + phoneNumber).replace(/\D/g, '');
+        const ddd = cleaned.substring(0, 2);
+        const firstPart = cleaned.substring(2, 7);
+        const secondPart = cleaned.substring(7, 11);
+        const formattedPhoneNumber = `(${ddd})${firstPart}-${secondPart}`;
+
+        return formattedPhoneNumber;
+    }
+
+    const handleRegister = async () => {
+        try {
+            const response = await axios.post(`${API_URL}/user/`, {
+                nome: nome,
+                apelido: apelido,
+                avatar: base64Image,
+                senha: senha,
+                email: email,
+                telefone: telefone,
+                
+            });
+
+
+            setHash(response.data);
+
+            criarLocalStorage();
+
+            
+            Alert.alert('Sucesso', 'Usuario cadastrado com sucesso!');
+        } catch (error) {
+            // Handle any errors
+            console.error('Erro ao cadastrar:', error);
+
+            // Example: Show an error message
+            Alert.alert('Erro', 'Falha ao cadastrar');
+        }
     };
+
+    function criarLocalStorage(){
+        console.log(response.data);
+    }
 
     return (
         <View style={styles.container}>
@@ -77,29 +148,29 @@ export default function AppCadastro() {
             <TextInput
                 style={styles.input}
                 placeholder="Nome"
-                onChangeText={setNome}
+                onChangeText={nomeMudou}
             />
             <TextInput
                 style={styles.input}
                 placeholder="Apelido"
-                onChangeText={setApelido}
+                onChangeText={apelidoMudou}
             />
 
             <TextInput
                 style={styles.input}
                 placeholder="Senha"
-                onChangeText={setSenha}
+                onChangeText={senhaMudou}
                 secureTextEntry={true}
             />
             <TextInput
                 style={styles.input}
                 placeholder="Email"
-                onChangeText={setEmail}
+                onChangeText={emailMudou}
             />
             <TextInput
                 style={styles.input}
                 placeholder="Telefone"
-                onChangeText={setTelefone}
+                onChangeText={telefoneMudou}
             />
 
             <TouchableOpacity

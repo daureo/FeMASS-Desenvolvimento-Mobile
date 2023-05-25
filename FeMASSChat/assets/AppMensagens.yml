@@ -1,0 +1,268 @@
+openapi: 3.0.0
+info:
+  title: API App Mensagens
+  version: 1.0.1
+  description: |
+    API para o App de Mensagens, utilizada na disciplina de Desenvolvimento Mobile da FeMASS em 2023.1
+servers:
+  - url: "https://api.com.br"
+    description: Servidor de Produção
+  - url: "https://api.com.br"
+    description: Servidor de Homologação
+tags:
+  - name: "User"
+paths:
+  /user/:
+    post:
+      tags:
+        - User
+      summary: Cria um usuário
+      description: "Cria um usuário"
+      operationId: "userCreate"
+      parameters:
+        - $ref: "#/components/parameters/content-Type"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUser"
+      responses:
+        "201":
+          $ref: "#/components/responses/201UserCreated"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /user/{login}/{senha}:
+    get:
+      tags:
+        - User
+      summary: Obtém a autentificação de um usuário a partir de um login e senha.
+      description: "Obtém a autentificação de um usuário a partir de um login e senha."
+      operationId: "userAuthentication"
+      parameters:
+        - $ref: "#/components/parameters/content-Type"
+        - $ref: "#/components/parameters/login"
+        - $ref: "#/components/parameters/senha"
+      responses:
+        "200":
+          $ref: "#/components/responses/200UserAuthenticated"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /user/{id}:
+    get:
+      tags:
+        - User
+      summary: Obtém o hash de um usuário especificado por um id.
+      description: "Obtém o hash de um usuário especificado por um id."
+      operationId: "userById"
+      parameters:
+        - $ref: "#/components/parameters/content-Type"
+        - $ref: "#/components/parameters/id"
+      responses:
+        "200":
+          description: Hash de um usuário especificado por um id.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseHash"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    
+    delete:
+      tags:
+        - User
+      summary: Deleta um usuário
+      description: "Deleta um usuário especificada"
+      operationId: "userDelete"
+      parameters:
+        - $ref: "#/components/parameters/content-Type"
+        - $ref: "#/components/parameters/id"
+      responses:
+        "204":
+          $ref: "#/components/responses/204UserDeleted"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+
+components:
+  schemas:
+    ResponseUser:
+      type: object
+      required:
+        - id
+        - nome
+        - avatar
+        - senha
+        - email
+        - telefone
+      properties:
+        id:
+          description: Id do usuário.
+          type: number
+          maxLength: 99999
+          example: 1
+        nome:
+          description: Nome do usuário.
+          type: string
+          maxLength: 100
+          example: José da Silva
+        apelido:
+          description: Apelido do usuário.
+          type: string
+          maxLength: 100
+          example: Zé
+        avatar:
+          description: Base 64 da imagem do avatar.
+          type: string
+          example: T2zDoSwgbXVuZG8h
+        senha:
+          description: Senha do usuário.
+          type: string
+          maxLength: 100
+          example: banana
+        email:
+          description: E-mail do usuário.
+          type: string
+          maxLength: 100
+          example: zé_silva@gmail.com
+        telefone:
+          description: Telefone do usuário.
+          type: string
+          maxLength: 100
+          example: '22999999999'
+
+    ResponseHash:
+      type: object
+      required:
+        - hash
+      properties:
+        hash:
+          description: Hash do usuário.
+          type: integer
+          example: 55556841234
+
+    CreateUser:
+      type: object
+      required:
+        - nome
+        - avatar
+        - senha
+        - email
+        - telefone
+      properties:
+        nome:
+          description: Nome do usuário.
+          type: string
+          maxLength: 100
+          example: José da Silva
+        apelido:
+          description: Apelido do usuário.
+          type: string
+          maxLength: 100
+          example: Zé
+        avatar:
+          description: Base 64 da imagem do avatar.
+          type: string
+          example: T2zDoSwgbXVuZG8h
+        senha:
+          description: Senha do usuário.
+          type: string
+          maxLength: 100
+          example: banana
+        email:
+          description: E-mail do usuário.
+          type: string
+          maxLength: 100
+          example: zé_silva@gmail.com
+        telefone:
+          description: Telefone do usuário.
+          type: string
+          maxLength: 100
+          example: '22999999999'
+
+    ResponseError:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          minItems: 1
+          maxItems: 13
+          items:
+            type: object
+            required:
+              - code
+              - title
+              - detail
+              - requestDateTime
+            properties:
+              code:
+                description: Código de erro específico do endpoint
+                type: string
+                pattern: '[\w\W\s]*'
+                maxLength: 255
+              title:
+                description: Título legível por humanos deste erro específico
+                type: string
+                pattern: '[\w\W\s]*'
+                maxLength: 255
+              detail:
+                description: Descrição legível por humanos deste erro específico
+                type: string
+                pattern: '[\w\W\s]*'
+                maxLength: 2048
+              requestDateTime:
+                description: "Data e hora da consulta, conforme especificação RFC-3339, formato UTC."
+                type: string
+                pattern: '[\w\W\s]*'
+                maxLength: 2048
+                format: date-time
+                example: "2021-08-20T08:30:00Z"
+            additionalProperties: false
+      additionalProperties: false
+  
+  parameters:
+    login:
+      name: login
+      in: path
+      description: E-mail ou telefone do usuário
+      required: true
+      schema:
+        type: string
+    senha:
+      name: senha
+      in: path
+      description: Senha do usuário
+      required: true
+      schema:
+        type: string
+    id:
+      name: id
+      in: path
+      description: Id do usuário
+      required: true
+      schema:
+        type: number
+    content-Type:
+      name: content-Type
+      in: header
+      description: Especificar o tipo de conteúdo da resposta.
+      schema:
+        type: string
+        pattern: '[\w\W\s]*'
+
+  responses:
+    InternalServerError:
+      description: Ocorreu um erro no gateway da API ou no microsserviço
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: "#/components/schemas/ResponseError"
+    200UserAuthenticated:
+      description: Usuário autenticado com sucesso.
+    201UserCreated:
+      description: Usuário criada com sucesso.
+    204UserDeleted:
+      description: Usuário deletada com sucesso.
