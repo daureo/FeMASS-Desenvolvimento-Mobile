@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Alert, StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
-import axios from 'axios'; 
+import axios from 'axios';
 
 
 
-export default function AppCadastro() {
+export default function AppCadastro({ navigation }) {
     const [id, setId] = useState('');
     const [foto, setFoto] = useState();
     const [nome, setNome] = useState('');
@@ -16,7 +16,7 @@ export default function AppCadastro() {
     const [telefone, setTelefone] = useState('');
     const [hash, setHash] = useState('');
     const [base64Image, setBase64Image] = useState('');
-    const API_URL = 'http://localhost:8080/';
+    const API_URL = 'http://192.168.0.10:8080';
 
     function manipularImagem() {
         Alert.alert(
@@ -70,7 +70,7 @@ export default function AppCadastro() {
     function fotoMudou(foto, base64Image) {
         setFoto(foto);
         setBase64Image(base64Image);
-        
+
     }
     function nomeMudou(nome) {
         setNome(nome);
@@ -85,7 +85,8 @@ export default function AppCadastro() {
         setEmail(email);
     }
     function telefoneMudou(telefone) {
-        setTelefone(formatPhoneNumber(telefone));
+        //setTelefone(formatPhoneNumber(telefone));
+        setTelefone(telefone);
     }
 
     function formatPhoneNumber(phoneNumber) {
@@ -107,15 +108,15 @@ export default function AppCadastro() {
                 senha: senha,
                 email: email,
                 telefone: telefone,
-                
+
             });
 
 
-            setHash(response.data);
+            console.log(response.config.data);
 
-            criarLocalStorage();
+            navigation.navigate('Login')
 
-            
+
             Alert.alert('Sucesso', 'Usuario cadastrado com sucesso!');
         } catch (error) {
             // Handle any errors
@@ -126,10 +127,7 @@ export default function AppCadastro() {
         }
     };
 
-    function criarLocalStorage(){
-        console.log(response.data);
-    }
-
+ 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Cadastro</Text>

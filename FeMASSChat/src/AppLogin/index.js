@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { Alert, StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
-import axios from 'axios'; 
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -9,19 +10,41 @@ import axios from 'axios';
 
 export default function AppLogin({ navigation }) {
 
+    const [userID, setUserID] = useState('');
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const [foto, setFoto] = useState();
     const [hash, setHash] = useState('');
-    const API_URL = 'http://localhost:8080/';
+    const API_URL = 'http://192.168.0.10:8080';
+
+    function userIdMudou(id){
+        setUserID(id);
+    }
+    function hashMudou(hash){
+        setHash(hash);
+    }
+
+    function loginMudou(login){
+        setLogin(login);
+    }
+
+    function senhaMudou(senha){
+        setPassword(senha);
+    }
 
     const handleLogin = async () => {
         try {
             const response = await axios.get(`${API_URL}/user/${login}/${password}`);
 
-            setHash(response.data);
+            userIdMudou(String(response.data.id));
 
-            criarLocalStorage();
+           let getHash = (await axios.get(`${API_URL}/user/${userID}`)).data;
+
+
+            hashMudou(getHash);
+
+            
+            await criarLocalStorage();
 
             navigation.navigate('Main');
 
@@ -34,11 +57,15 @@ export default function AppLogin({ navigation }) {
             // Example: Show an error message
             Alert.alert('Erro', 'Falha ao entrar');
         }
-        
+
     };
 
-    function criarLocalStorage(){
-        console.log(hash);
+    async function criarLocalStorage() {
+        await AsyncStorage.setItem('userHash', String(hash));
+        await AsyncStorage.setItem('userID', String(userID));
+        
+        console.log(await AsyncStorage.getItem('userHash'));
+        console.log(await AsyncStorage.getItem('userID'));
     }
 
     const novoUsuario = () => {
@@ -56,12 +83,12 @@ export default function AppLogin({ navigation }) {
             <TextInput
                 style={styles.input}
                 placeholder="Login"
-                onChangeText={setLogin}
+                onChangeText={loginMudou}
             />
             <TextInput
                 style={styles.input}
                 placeholder="Senha"
-                onChangeText={setPassword}
+                onChangeText={senhaMudou}
                 secureTextEntry={true}
             />
             <TouchableOpacity
