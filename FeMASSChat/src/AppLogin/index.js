@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,12 +10,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function AppLogin({ navigation }) {
 
-    const [userID, setUserID] = useState('');
-    const [login, setLogin] = useState('');
-    const [password, setPassword] = useState('');
+    const [userID, setUserID] = useState();
+    const [login, setLogin] = useState();
+    const [password, setPassword] = useState();
     const [foto, setFoto] = useState();
-    const [hash, setHash] = useState('');
-    const API_URL = 'http://192.168.0.10:8080';
+    const [hash, setHash] = useState();
+    
+    const API_URL = 'http://192.168.179.61:8080';
+
 
     function userIdMudou(id){
         setUserID(id);
@@ -32,19 +34,30 @@ export default function AppLogin({ navigation }) {
         setPassword(senha);
     }
 
+   useEffect(() => {
+    console.log("useEffect - useStateHash: " + hash);
+  }, [hash]);
+    
     const handleLogin = async () => {
+     
         try {
+            
             const response = await axios.get(`${API_URL}/user/${login}/${password}`);
-
+            
             userIdMudou(String(response.data.id));
 
-           let getHash = (await axios.get(`${API_URL}/user/${userID}`)).data;
+            temp = (await axios.get(`${API_URL}/user/${response.data.id}`));
+            console.log(temp);
 
+            //setHash((await axios.get(`${API_URL}/user/${response.data.id}`)).data);
 
-            hashMudou(getHash);
-
+           
             
-            await criarLocalStorage();
+            console.log("Dentro da funcao handlelogin - useStateHash: " + hash);
+            
+            
+
+            await criarLocalStorage(temp.data);
 
             navigation.navigate('Main');
 
@@ -59,13 +72,15 @@ export default function AppLogin({ navigation }) {
         }
 
     };
+      
 
-    async function criarLocalStorage() {
-        await AsyncStorage.setItem('userHash', String(hash));
+    async function criarLocalStorage(hash) {
+        let localUserHash = String(hash);
+        await AsyncStorage.setItem('userHash', localUserHash);
         await AsyncStorage.setItem('userID', String(userID));
-        
-        console.log(await AsyncStorage.getItem('userHash'));
-        console.log(await AsyncStorage.getItem('userID'));
+        console.log("Dentro da funcao criarLocalStorage - var localuserhash: " + localUserHash);
+       console.log("Dentro da funcao criarLocalStorage - var getITEM(userHash): " +  await AsyncStorage.getItem('userHash'));
+     
     }
 
     const novoUsuario = () => {
@@ -93,7 +108,7 @@ export default function AppLogin({ navigation }) {
             />
             <TouchableOpacity
                 style={styles.button}
-                onPress={handleLogin}
+                onPress={() => {handleLogin()}}
             >
                 <Text style={styles.buttonText}>Entrar</Text>
             </TouchableOpacity>

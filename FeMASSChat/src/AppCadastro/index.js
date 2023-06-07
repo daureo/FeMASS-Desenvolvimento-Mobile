@@ -16,7 +16,7 @@ export default function AppCadastro({ navigation }) {
     const [telefone, setTelefone] = useState('');
     const [hash, setHash] = useState('');
     const [base64Image, setBase64Image] = useState('');
-    const API_URL = 'http://192.168.0.10:8080';
+    const API_URL = 'http://192.168.179.61:8080';
 
     function manipularImagem() {
         Alert.alert(

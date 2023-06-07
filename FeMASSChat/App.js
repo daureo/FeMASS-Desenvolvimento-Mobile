@@ -65,7 +65,7 @@ const LoginScreen = ({ navigation }) => {
 const MainScreen = () => {
   return (
     <View>
-      <Text>Bem-Vindo</Text>
+      <Text>Bem-Vindo Usuario</Text>
     </View>
   );
 };
