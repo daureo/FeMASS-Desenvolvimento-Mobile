@@ -44,7 +44,7 @@ export default function AppLogin({ navigation }) {
             
             const response = await axios.get(`${API_URL}/user/${login}/${password}`);
             
-            userIdMudou(String(response.data.id));
+            serverUSERID = response.data.id;
 
             temp = (await axios.get(`${API_URL}/user/${response.data.id}`));
             console.log(temp);
@@ -57,7 +57,7 @@ export default function AppLogin({ navigation }) {
             
             
 
-            await criarLocalStorage(temp.data);
+            await criarLocalStorage(temp.data, serverUSERID);
 
             navigation.navigate('Main');
 
@@ -74,10 +74,11 @@ export default function AppLogin({ navigation }) {
     };
       
 
-    async function criarLocalStorage(hash) {
+    async function criarLocalStorage(hash, id) {
         let localUserHash = String(hash);
+        let localID = String(id);
         await AsyncStorage.setItem('userHash', localUserHash);
-        await AsyncStorage.setItem('userID', String(userID));
+        await AsyncStorage.setItem('userID', localID);
         console.log("Dentro da funcao criarLocalStorage - var localuserhash: " + localUserHash);
        console.log("Dentro da funcao criarLocalStorage - var getITEM(userHash): " +  await AsyncStorage.getItem('userHash'));
      

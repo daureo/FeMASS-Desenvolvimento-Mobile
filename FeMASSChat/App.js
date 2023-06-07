@@ -22,20 +22,31 @@ const HomeScreen = ({ navigation }) => {
       const userHash = await AsyncStorage.getItem('userHash');
       const userID = await AsyncStorage.getItem('userID');
 
+      console.log(userHash);
+      console.log(userID);
+
       if (userHash) {
 
         const remoteHash = (await axios.get(`${API_URL}/user/${userID}`)).data;
 
         if (userHash == remoteHash)
           navigation.navigate('Main');
-        else
+        else {
+          Alert.alert('Falha', 'Usuario nao encontrado!');
           navigation.navigate('Login');
+        }
 
       } else
         navigation.navigate('Login');
 
     } catch (error) {
-      console.error('Erro ao verificar local storage:', error);
+      if (error.response && error.response.status === 500) {
+        console.log("Usuario nao encontrado");
+        navigation.navigate('Login');
+      } else {
+        console.error('Erro ao verificar local storage:', error);
+      }
+     
     } finally {
       setIsLoading(false);
     }
