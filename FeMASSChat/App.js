@@ -6,6 +6,8 @@ import { createStackNavigator } from 'react-navigation-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppLogin from './src/AppLogin';
 import AppCadastro from './src/AppCadastro';
+import AppConversas from './src/AppConversas';
+import AppChat from './src/AppConversas/AppChat';
 
 
 const API_URL = 'http://192.168.0.10:8080';
@@ -36,7 +38,7 @@ const HomeScreen = ({ navigation }) => {
           navigation.navigate('Main');
         }
         else {
-          Alert.alert('Falha', 'Usuario nao encontrado!');
+        //  Alert.alert('Falha', 'Usuario nao encontrado!');
           navigation.navigate('Login');
         }
 
@@ -66,7 +68,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View>
-      <Text>Verificando dados locais...</Text>
+      <Text>Verificando dados locais..</Text>
     </View>
   );
 };
@@ -77,11 +79,12 @@ const LoginScreen = ({ navigation }) => {
   );
 };
 
-const MainScreen = () => {
+const MainScreen = ({ navigation }) => {
+     
+    userID = userData.userID;
+   
   return (
-    <View>
-      <Text>Bem-Vindo Usuario</Text>
-    </View>
+    <AppConversas navigation={navigation} userID={userID}></AppConversas>
   );
 };
 
@@ -91,12 +94,19 @@ const CadastroScreen = ({ navigation }) => {
   );
 };
 
+const ConversaScreen = ({ navigation }) => {
+  return (
+    <AppChat></AppChat>
+  );
+};
+
 const AppNavigator = createStackNavigator(
   {
     Home: HomeScreen,
     Login: LoginScreen,
     Main: MainScreen,
     Cadastro: CadastroScreen,
+    Chat : ConversaScreen,
   },
   {
     initialRouteName: 'Home',
