@@ -16,7 +16,7 @@ export default function AppCadastro({ navigation }) {
     const [telefone, setTelefone] = useState('');
     const [hash, setHash] = useState('');
     const [base64Image, setBase64Image] = useState('');
-    const API_URL = 'http://192.168.179.61:8080';
+    const API_URL = 'http://192.168.0.10:8080';
 
     function manipularImagem() {
         Alert.alert(
@@ -52,13 +52,15 @@ export default function AppCadastro({ navigation }) {
 
 
         if (!result.canceled) {
-            const base64Image = await convertImageToBase64(result.uri);
-            fotoMudou(result.assets[0].uri, base64Image);
+            const selectedAsset = result.assets[0];
+            const base64Image = await convertImageToBase64(selectedAsset);
+            const uri = selectedAsset.uri;
+            fotoMudou(uri, base64Image);
         }
     };
 
-    const convertImageToBase64 = async (imageUri) => {
-        const base64Image = await FileSystem.readAsStringAsync(imageUri, {
+    const convertImageToBase64 = async (asset) => {
+        const base64Image = await FileSystem.readAsStringAsync(asset.uri, {
             encoding: FileSystem.EncodingType.Base64,
         });
         return base64Image;
@@ -112,7 +114,7 @@ export default function AppCadastro({ navigation }) {
             });
 
 
-            console.log(response.config.data);
+            //console.log(response.config.data);
 
             navigation.navigate('Login')
 

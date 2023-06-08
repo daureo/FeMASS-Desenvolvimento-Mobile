@@ -16,7 +16,7 @@ export default function AppLogin({ navigation }) {
     const [foto, setFoto] = useState();
     const [hash, setHash] = useState();
     
-    const API_URL = 'http://192.168.179.61:8080';
+    const API_URL = 'http://192.168.0.10:8080';
 
 
     function userIdMudou(id){
@@ -35,7 +35,7 @@ export default function AppLogin({ navigation }) {
     }
 
    useEffect(() => {
-    console.log("useEffect - useStateHash: " + hash);
+    
   }, [hash]);
     
     const handleLogin = async () => {
@@ -47,28 +47,22 @@ export default function AppLogin({ navigation }) {
             serverUSERID = response.data.id;
 
             temp = (await axios.get(`${API_URL}/user/${response.data.id}`));
-            console.log(temp);
-
-            //setHash((await axios.get(`${API_URL}/user/${response.data.id}`)).data);
-
-           
             
-            console.log("Dentro da funcao handlelogin - useStateHash: " + hash);
-            
-            
-
             await criarLocalStorage(temp.data, serverUSERID);
 
             navigation.navigate('Main');
 
 
-            Alert.alert('Sucesso', 'Usuario logado com sucesso!');
+            Alert.alert('Sucesso', 'Usuário logado com sucesso!');
         } catch (error) {
-            // Handle any errors
-            console.error('Erro ao logar:', error);
-
-            // Example: Show an error message
-            Alert.alert('Erro', 'Falha ao entrar');
+            
+            if (error.response && error.response.status === 500) {
+                Alert.alert('Falha', 'Usuário não encontrado')
+                console.error("Usuário não encontrado");
+                navigation.navigate('Login');
+              } else {
+                console.error('Erro ao verificar local storage:', error);
+              }
         }
 
     };
@@ -79,9 +73,7 @@ export default function AppLogin({ navigation }) {
         let localID = String(id);
         await AsyncStorage.setItem('userHash', localUserHash);
         await AsyncStorage.setItem('userID', localID);
-        console.log("Dentro da funcao criarLocalStorage - var localuserhash: " + localUserHash);
-       console.log("Dentro da funcao criarLocalStorage - var getITEM(userHash): " +  await AsyncStorage.getItem('userHash'));
-     
+       
     }
 
     const novoUsuario = () => {

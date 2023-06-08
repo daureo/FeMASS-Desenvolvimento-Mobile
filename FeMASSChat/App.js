@@ -8,7 +8,8 @@ import AppLogin from './src/AppLogin';
 import AppCadastro from './src/AppCadastro';
 
 
-const API_URL = 'http://192.168.179.61:8080';
+const API_URL = 'http://192.168.0.10:8080';
+let userData = {};
 
 const HomeScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -22,15 +23,18 @@ const HomeScreen = ({ navigation }) => {
       const userHash = await AsyncStorage.getItem('userHash');
       const userID = await AsyncStorage.getItem('userID');
 
-      console.log(userHash);
-      console.log(userID);
-
       if (userHash) {
 
         const remoteHash = (await axios.get(`${API_URL}/user/${userID}`)).data;
 
-        if (userHash == remoteHash)
+        if (userHash == remoteHash) {
+          userData = {
+            'userHash': userHash,
+            'userID': userID,
+          }
+          
           navigation.navigate('Main');
+        }
         else {
           Alert.alert('Falha', 'Usuario nao encontrado!');
           navigation.navigate('Login');
@@ -41,12 +45,12 @@ const HomeScreen = ({ navigation }) => {
 
     } catch (error) {
       if (error.response && error.response.status === 500) {
-        console.log("Usuario nao encontrado");
+        console.error("Usuário não encontrado");
         navigation.navigate('Login');
       } else {
         console.error('Erro ao verificar local storage:', error);
       }
-     
+
     } finally {
       setIsLoading(false);
     }
