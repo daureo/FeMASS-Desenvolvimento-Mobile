@@ -100,7 +100,6 @@ const ConversaScreen = ({ navigation }) => {
   const { params } = navigation.state;
   const otherUserID = params ? params.otherUserID : null;
 
-  console.log(otherUserID);
   return (
     <AppChat navigation={navigation} userID={userID} otherUserID={otherUserID}></AppChat>
   );

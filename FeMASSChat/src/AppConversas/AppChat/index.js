@@ -6,21 +6,37 @@ const API_URL = 'http://192.168.0.10:8080';
 
 
 export default function AppChat({ navigation, userID, otherUserID }) {
-   
+
     const [newMessage, setNewMessage] = useState('');
     const scrollViewRef = useRef();
     const [conversas, setConversas] = useState([]);
 
     async function carregarMensagens(id, otherId) {
-               
+
         const mensagens = (await axios.get(`${API_URL}/message/buscarMensagensComUmUsuario/${id}/${otherId}`)).data;
-       
+
         setConversas(mensagens);
 
     };
 
-    const sendMessage = () => {
-        console.log(newMessage);
+    async function sendMessage() {
+        try {
+            const response = await axios.post(`${API_URL}/enviarMensagem/`, {
+                "id": parseInt(userID),
+                "idOther": otherUserID,
+                "texto": newMessage
+            });
+
+
+        } finally {
+            console.log(typeof(parseInt(userID)));
+            console.log(typeof(otherUserID));
+            console.log(typeof(newMessage));
+
+            console.log(newMessage);
+            carregarMensagens(userID, otherUserID);
+            setNewMessage('');
+        }
     };
 
     useEffect(() => {
