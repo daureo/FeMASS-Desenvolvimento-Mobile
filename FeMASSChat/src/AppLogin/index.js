@@ -5,7 +5,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-
+//const API_URL = 'http://192.168.0.10:8080';
+const API_URL = 'http://192.168.70.61:8080';
 
 
 export default function AppLogin({ navigation }) {
@@ -16,9 +17,7 @@ export default function AppLogin({ navigation }) {
     const [foto, setFoto] = useState();
     const [hash, setHash] = useState();
     
-    const API_URL = 'http://192.168.0.10:8080';
-
-
+   
     function userIdMudou(id){
         setUserID(id);
     }

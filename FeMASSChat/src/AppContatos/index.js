@@ -8,12 +8,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 //const API_URL = 'http://192.168.0.10:8080';
 const API_URL = 'http://192.168.70.61:8080';
 
-export default function AppConversas({ navigation, userID }) {
+export default function AppContatos({ navigation, userID }) {
     const [listaContato, setListaContato] = useState([]);
 
     async function carregarLista(userID) {
 
-        const response = await axios.get(`${API_URL}/message/buscarUsuariosComConversa/${userID}`);
+        const response = await axios.get(`${API_URL}/message/buscarUsuarios/22988212088`);
         if (response) {
             setListaContato(response.data);
             await AsyncStorage.setItem('horaAtualizacao', String(new Date()));
@@ -23,7 +23,7 @@ export default function AppConversas({ navigation, userID }) {
 
     function chamarDetalhes(otherID) {
 
-        navigation.navigate('Chat', { otherUserID: otherID});
+        navigation.navigate('Chat', { otherUserID: otherID });
     }
 
     async function verificarMensagens() {
@@ -38,20 +38,24 @@ export default function AppConversas({ navigation, userID }) {
 
     }
 
-    function abrirLista(){
+    function abrirLista() {
         navigation.navigate('Contatos');
         console.log("Abrindo tela com lista de contatos")
     }
 
     useEffect(() => {
         carregarLista(userID);
-        setInterval(verificarMensagens, 1000 * 60 * 1);
+     
     }, [userID]);
 
     return (
         <View style={styles.container}>
             <StatusBar style="light-content" />
-
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.button} onPress={abrirLista}>
+                    <Text style={styles.buttonText}>Nova Conversa</Text>
+                </TouchableOpacity>
+            </View>
             <ScrollView
                 style={styles.scrollContainer}
                 contentContainerStyle={styles.itemsContainer}
@@ -68,11 +72,7 @@ export default function AppConversas({ navigation, userID }) {
                         );
                 })}
             </ScrollView>
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={abrirLista}>
-                    <Text style={styles.buttonText}>Nova Conversa</Text>
-                </TouchableOpacity>
-            </View>
+
         </View>
     );
 }
@@ -85,10 +85,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     buttonContainer: {
-        position: 'absolute',
-        bottom: 0,
+        position: 'absolute',        
         left: 0,
         right: 0,
+        top: 0,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'transparent', // Adjust as needed

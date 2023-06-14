@@ -9,10 +9,12 @@ import AppCadastro from './src/AppCadastro';
 import AppConversas from './src/AppConversas';
 import AppChat from './src/AppConversas/AppChat';
 import { useRoute } from '@react-navigation/native';
+import AppContatos from './src/AppContatos';
 
 
+//const API_URL = 'http://192.168.0.10:8080';
+const API_URL = 'http://192.168.70.61:8080';
 
-const API_URL = 'http://192.168.0.10:8080';
 let userData = {};
 
 const HomeScreen = ({ navigation }) => {
@@ -105,6 +107,12 @@ const ConversaScreen = ({ navigation }) => {
   );
 };
 
+const ContatosScreen = ({ navigation }) => {
+  return (
+    <AppContatos navigation={navigation}></AppContatos>
+  );
+};
+
 const AppNavigator = createStackNavigator(
   {
     Home: HomeScreen,
@@ -112,6 +120,7 @@ const AppNavigator = createStackNavigator(
     Conversas: MainScreen,
     Cadastro: CadastroScreen,
     Chat : ConversaScreen,
+    Contatos: ContatosScreen,
   },
   {
     initialRouteName: 'Home',

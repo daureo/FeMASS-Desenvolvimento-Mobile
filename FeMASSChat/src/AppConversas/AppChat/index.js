@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.0.10:8080';
+//const API_URL = 'http://192.168.0.10:8080';
+const API_URL = 'http://192.168.70.61:8080';
 
 
 export default function AppChat({ navigation, userID, otherUserID }) {
@@ -20,19 +21,21 @@ export default function AppChat({ navigation, userID, otherUserID }) {
     };
 
     async function sendMessage() {
+        
+        const dados = {
+            "id": parseInt(userID),
+            "idOther": otherUserID,
+            "texto": newMessage
+        };
+        console.log(dados);
         try {
-            const response = await axios.post(`${API_URL}/enviarMensagem/`, {
-                "id": parseInt(userID),
-                "idOther": otherUserID,
-                "texto": newMessage
-            });
-
-
-        } finally {
-            console.log(typeof(parseInt(userID)));
-            console.log(typeof(otherUserID));
-            console.log(typeof(newMessage));
-
+             const response = await axios.post(`${API_URL}/message/enviarMensagem`, dados);
+            
+           
+        }  catch(error){
+            console.log(error);
+        }finally {
+           
             console.log(newMessage);
             carregarMensagens(userID, otherUserID);
             setNewMessage('');

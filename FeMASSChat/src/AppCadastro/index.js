@@ -4,6 +4,8 @@ import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import axios from 'axios';
 
+//const API_URL = 'http://192.168.0.10:8080';
+const API_URL = 'http://192.168.70.61:8080';
 
 
 export default function AppCadastro({ navigation }) {
@@ -16,7 +18,7 @@ export default function AppCadastro({ navigation }) {
     const [telefone, setTelefone] = useState('');
     const [hash, setHash] = useState('');
     const [base64Image, setBase64Image] = useState('');
-    const API_URL = 'http://192.168.0.10:8080';
+   
 
     function manipularImagem() {
         Alert.alert(
