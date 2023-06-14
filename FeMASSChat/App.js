@@ -8,6 +8,8 @@ import AppLogin from './src/AppLogin';
 import AppCadastro from './src/AppCadastro';
 import AppConversas from './src/AppConversas';
 import AppChat from './src/AppConversas/AppChat';
+import { useRoute } from '@react-navigation/native';
+
 
 
 const API_URL = 'http://192.168.0.10:8080';
@@ -35,7 +37,7 @@ const HomeScreen = ({ navigation }) => {
             'userID': userID,
           }
           
-          navigation.navigate('Main');
+          navigation.navigate('Conversas');
         }
         else {
         //  Alert.alert('Falha', 'Usuario nao encontrado!');
@@ -95,8 +97,12 @@ const CadastroScreen = ({ navigation }) => {
 };
 
 const ConversaScreen = ({ navigation }) => {
+  const { params } = navigation.state;
+  const otherUserID = params ? params.otherUserID : null;
+
+  console.log(otherUserID);
   return (
-    <AppChat></AppChat>
+    <AppChat navigation={navigation} userID={userID} otherUserID={otherUserID}></AppChat>
   );
 };
 
@@ -104,7 +110,7 @@ const AppNavigator = createStackNavigator(
   {
     Home: HomeScreen,
     Login: LoginScreen,
-    Main: MainScreen,
+    Conversas: MainScreen,
     Cadastro: CadastroScreen,
     Chat : ConversaScreen,
   },

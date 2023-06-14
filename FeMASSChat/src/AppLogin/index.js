@@ -50,7 +50,7 @@ export default function AppLogin({ navigation }) {
             
             await criarLocalStorage(temp.data, serverUSERID);
 
-            navigation.navigate('Main');
+            navigation.navigate('Conversas');
 
 
             Alert.alert('Sucesso', 'Usuário logado com sucesso!');
