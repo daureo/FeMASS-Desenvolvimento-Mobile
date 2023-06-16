@@ -23,9 +23,9 @@ export default function AppChat({ navigation, userID, otherUserID }) {
     async function sendMessage() {
         
         const dados = {
-            "id": parseInt(userID),
-            "idOther": otherUserID,
-            "texto": newMessage
+            "idFrom": parseInt(userID),
+            "idTo": otherUserID,
+            "mensagem": newMessage
         };
         console.log(dados);
         try {
