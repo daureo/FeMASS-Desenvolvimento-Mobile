@@ -5,8 +5,8 @@ import ItemLista from "./ItemLista";
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-//const API_URL = 'http://192.168.0.10:8080';
-const API_URL = 'http://192.168.70.61:8080';
+const API_URL = 'http://192.168.0.10:8080';
+//const API_URL = 'http://192.168.70.61:8080';
 
 export default function AppConversas({ navigation, userID }) {
     const [listaContato, setListaContato] = useState([]);
@@ -15,7 +15,8 @@ export default function AppConversas({ navigation, userID }) {
 
         const response = await axios.get(`${API_URL}/message/buscarUsuariosComConversa/${userID}`);
         if (response) {
-            setListaContato(response.data);
+            const respostaOrdenada = response.data.sort((a, b) => a.nome.localeCompare(b.nome));
+            setListaContato(respostaOrdenada);
             await AsyncStorage.setItem('horaAtualizacao', String(new Date()));
 
         }
@@ -57,7 +58,7 @@ export default function AppConversas({ navigation, userID }) {
                 contentContainerStyle={styles.itemsContainer}
             >
                 {listaContato.map(item => {
-                    if (item.id != userID)
+                    
                         return (
                             <TouchableOpacity
                                 onPress={() => chamarDetalhes(item.id)}

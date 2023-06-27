@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import axios from 'axios';
 
-//const API_URL = 'http://192.168.0.10:8080';
-const API_URL = 'http://192.168.70.61:8080';
+const API_URL = 'http://192.168.0.10:8080';
+//const API_URL = 'http://192.168.70.61:8080';
 
 
 export default function AppChat({ navigation, userID, otherUserID }) {
@@ -16,8 +16,10 @@ export default function AppChat({ navigation, userID, otherUserID }) {
 
         const mensagens = (await axios.get(`${API_URL}/message/buscarMensagensComUmUsuario/${id}/${otherId}`)).data;
 
-        setConversas(mensagens);
+        mensagens.sort((a, b) => new Date(a.dataHora) - new Date(b.dataHora));
 
+        setConversas(mensagens);
+        
     };
 
     async function sendMessage() {

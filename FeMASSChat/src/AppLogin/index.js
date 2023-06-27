@@ -5,8 +5,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-//const API_URL = 'http://192.168.0.10:8080';
-const API_URL = 'http://192.168.70.61:8080';
+const API_URL = 'http://192.168.0.10:8080';
+//const API_URL = 'http://192.168.70.61:8080';
 
 
 export default function AppLogin({ navigation }) {
@@ -47,12 +47,9 @@ export default function AppLogin({ navigation }) {
 
             temp = (await axios.get(`${API_URL}/user/${response.data.id}`));
             
-            await criarLocalStorage(temp.data, serverUSERID);
+            await criarLocalStorage(temp.data, serverUSERID, login);
 
-            navigation.navigate('Conversas');
-
-
-            Alert.alert('Sucesso', 'Usuário logado com sucesso!');
+            
         } catch (error) {
             
             if (error.response && error.response.status === 500) {
@@ -62,16 +59,26 @@ export default function AppLogin({ navigation }) {
               } else {
                 console.error('Erro ao verificar local storage:', error);
               }
+        } finally {
+            navigation.navigate('Conversas');
+
+
+            Alert.alert('Sucesso', 'Usuário logado com sucesso!');
         }
 
     };
       
 
-    async function criarLocalStorage(hash, id) {
+    async function criarLocalStorage(hash, id, login) {
         let localUserHash = String(hash);
         let localID = String(id);
+        let localLogin = String(login);
+
         await AsyncStorage.setItem('userHash', localUserHash);
         await AsyncStorage.setItem('userID', localID);
+        await AsyncStorage.setItem('login', localLogin);
+
+
        
     }
 

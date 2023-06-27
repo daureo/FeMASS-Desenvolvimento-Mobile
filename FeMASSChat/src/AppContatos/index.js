@@ -5,20 +5,23 @@ import ItemLista from "./ItemLista";
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-//const API_URL = 'http://192.168.0.10:8080';
-const API_URL = 'http://192.168.70.61:8080';
+const API_URL = 'http://192.168.0.10:8080';
+//const API_URL = 'http://192.168.70.61:8080';
 
-export default function AppContatos({ navigation, userID }) {
+export default function AppContatos({ navigation, userID, login }) {
     const [listaContato, setListaContato] = useState([]);
-
-    async function carregarLista(userID) {
-
-        const response = await axios.get(`${API_URL}/message/buscarUsuarios/22988212088`);
+    //console.log(login);
+    async function carregarLista(userID, login) {
+        
+        const response = await axios.get(`${API_URL}/message/buscarUsuarios/${login}`);
         if (response) {
-            setListaContato(response.data);
+            const respostaOrdenada = response.data.sort((a, b) => a.nome.localeCompare(b.nome));
+            
+            setListaContato(respostaOrdenada);
             await AsyncStorage.setItem('horaAtualizacao', String(new Date()));
 
         }
+        
     }
 
     function chamarDetalhes(otherID) {
@@ -33,7 +36,7 @@ export default function AppContatos({ navigation, userID }) {
 
 
 
-        carregarLista(userID);
+        carregarLista(userID, login);
 
 
     }
@@ -44,24 +47,21 @@ export default function AppContatos({ navigation, userID }) {
     }
 
     useEffect(() => {
-        carregarLista(userID);
+        carregarLista(userID, login);
+        
      
     }, [userID]);
 
     return (
         <View style={styles.container}>
             <StatusBar style="light-content" />
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={abrirLista}>
-                    <Text style={styles.buttonText}>Nova Conversa</Text>
-                </TouchableOpacity>
-            </View>
+           
             <ScrollView
                 style={styles.scrollContainer}
                 contentContainerStyle={styles.itemsContainer}
             >
                 {listaContato.map(item => {
-                    if (item.id != userID)
+                    
                         return (
                             <TouchableOpacity
                                 onPress={() => chamarDetalhes(item.id)}
@@ -70,6 +70,7 @@ export default function AppContatos({ navigation, userID }) {
                                 <ItemLista id={item.id} avatar={item.avatar} nome={item.nome}></ItemLista>
                             </TouchableOpacity>
                         );
+                    
                 })}
             </ScrollView>
 

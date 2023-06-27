@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 import axios from 'axios';
 import { createAppContainer } from 'react-navigation';
@@ -10,42 +10,73 @@ import AppConversas from './src/AppConversas';
 import AppChat from './src/AppConversas/AppChat';
 import { useRoute } from '@react-navigation/native';
 import AppContatos from './src/AppContatos';
+import { AppContext, AppProvider } from './AppContext';
 
 
 const API_URL = 'http://192.168.0.10:8080';
 //const API_URL = 'http://192.168.70.61:8080';
 
-let userData = {}; //essa eh uma variavel
+
+
+
 
 const HomeScreen = ({ navigation }) => {
-  const [isLoading, setIsLoading] = useState(true); //useStat nao eh uma variavel, é um 'atributo' de um componente como funcao e nao classe.
+  const [isLoading, setIsLoading] = useState(true);
+  const [dadosLS, setDadosLS] = useContext(AppContext);
+  
 
-  useEffect(() => {
-    checkLocalStorage();
-  });
 
-  const checkLocalStorage = async () => {
+  const carregarDados = async () => {
     try {
       const userHash = await AsyncStorage.getItem('userHash');
       const userID = await AsyncStorage.getItem('userID');
       const login = await AsyncStorage.getItem('login');
-      
 
-      if (userHash) {
+      const dados = {
+        'userHash': userHash,
+        'userID': userID,
+        'login': login,
+      }
+
+      return dados;
+
+    } catch (error) {
+      console.error('Erro ao carregar dados da loja local: ', error);
+    }
+  }
+
+
+  useEffect(() => {
+    const pegarDadosAsync = async () => {
+      const dado = await carregarDados();
+      setDadosLS(dado);
+     
+      console.log(dadosLS);
+    }
+    pegarDadosAsync();
+
+    checkLocalStorage();
+  }, []);
+
+  const checkLocalStorage = async () => {
+    try {
+
+
+      if (dadosLS.userHash) {
 
         const remoteHash = (await axios.get(`${API_URL}/user/${userID}`)).data;
 
-        if (userHash == remoteHash) {
+        if (dadosLS.userHash == remoteHash) {
           userData = {
             'userHash': userHash,
             'userID': userID,
             'login': login,
           }
-          
+
           navigation.navigate('Conversas');
         }
         else {
-        //  Alert.alert('Falha', 'Usuario nao encontrado!');
+          //  Alert.alert('Falha', 'Usuario nao encontrado!');
           navigation.navigate('Login');
         }
 
@@ -87,13 +118,11 @@ const LoginScreen = ({ navigation }) => {
 };
 
 const MainScreen = ({ navigation }) => {
-     
-    userID = userData.userID;
-    
-   
-  return (
-    <AppConversas navigation={navigation} userID={userID}></AppConversas>
-  );
+
+
+  return dadosLS.userID ? (
+    <AppConversas navigation={navigation} userID={dadosLS.userID}></AppConversas>
+  ) : null;
 };
 
 const CadastroScreen = ({ navigation }) => {
@@ -105,37 +134,44 @@ const CadastroScreen = ({ navigation }) => {
 const ConversaScreen = ({ navigation }) => {
   const { params } = navigation.state;
   const otherUserID = params ? params.otherUserID : null;
-  const userID = userData.userID;
+
   return (
-    <AppChat navigation={navigation} userID={userID} otherUserID={otherUserID}></AppChat>
+    <AppChat navigation={navigation} userID={dadosLS.userID} otherUserID={otherUserID}></AppChat>
   );
 };
 
 const ContatosScreen = ({ navigation }) => {
-  const userID = userData.userID;
-  const login = userData.login;
-  
+  const userID = dadosLS.userID;
+  const login = dadosLS.login;
+
   return (
     <AppContatos navigation={navigation} userID={userID} login={login}></AppContatos>
   );
 };
 
 const AppNavigator = createStackNavigator(
+
   {
     Home: HomeScreen,
     Login: LoginScreen,
     Conversas: MainScreen,
     Cadastro: CadastroScreen,
-    Chat : ConversaScreen,
+    Chat: ConversaScreen,
     Contatos: ContatosScreen,
   },
   {
     initialRouteName: 'Home',
   }
+
 );
 
 const AppContainer = createAppContainer(AppNavigator);
 
 export default function App() {
-  return <AppContainer />;
+
+  return (
+    <AppProvider>
+      <AppContainer />
+    </AppProvider>
+  );
 }
