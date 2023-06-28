@@ -10,21 +10,26 @@ const API_URL = 'http://192.168.0.10:8080';
 
 export default function AppConversas({ navigation, userID }) {
     const [listaContato, setListaContato] = useState([]);
+    
 
     async function carregarLista(userID) {
 
         const response = await axios.get(`${API_URL}/message/buscarUsuariosComConversa/${userID}`);
+
+       
+
         if (response) {
+
             const respostaOrdenada = response.data.sort((a, b) => a.nome.localeCompare(b.nome));
             setListaContato(respostaOrdenada);
             await AsyncStorage.setItem('horaAtualizacao', String(new Date()));
-
+            console.log("Atualizei lista");
         }
     }
 
     function chamarDetalhes(otherID) {
 
-        navigation.navigate('Chat', { otherUserID: otherID});
+        navigation.navigate('Chat', { otherUserID: otherID });
     }
 
     async function verificarMensagens() {
@@ -32,22 +37,29 @@ export default function AppConversas({ navigation, userID }) {
 
         let ultimaAtualizacao = await AsyncStorage.getItem('horaAtualizacao');
 
+        const response = await axios.get(`${API_URL}/message/buscarNovasMensages/${data}/${hora}/${userID}`);
 
-
-        carregarLista(userID);
+        console.log("Busquei atualizacao: " + ultimaAtualizacao);
+        
+       carregarLista(userID);
 
 
     }
 
-    function abrirLista(){
+    function abrirLista() {
         navigation.navigate('Contatos');
         console.log("Abrindo tela com lista de contatos")
     }
 
     useEffect(() => {
         carregarLista(userID);
-        setInterval(verificarMensagens, 1000 * 60 * 1);
-    }, [userID]);
+        const interval = setInterval(()=>{
+            verificarMensagens();
+        }, 30000);
+        
+        return () => clearInterval(interval);
+        
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -58,15 +70,15 @@ export default function AppConversas({ navigation, userID }) {
                 contentContainerStyle={styles.itemsContainer}
             >
                 {listaContato.map(item => {
-                    
-                        return (
-                            <TouchableOpacity
-                                onPress={() => chamarDetalhes(item.id)}
-                                key={item.id}
-                            >
-                                <ItemLista id={item.id} avatar={item.avatar} nome={item.nome}></ItemLista>
-                            </TouchableOpacity>
-                        );
+
+                    return (
+                        <TouchableOpacity
+                            onPress={() => chamarDetalhes(item.id)}
+                            key={item.id}
+                        >
+                            <ItemLista id={item.id} avatar={item.avatar} nome={item.nome}></ItemLista>
+                        </TouchableOpacity>
+                    );
                 })}
             </ScrollView>
             <View style={styles.buttonContainer}>
