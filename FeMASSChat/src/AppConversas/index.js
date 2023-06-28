@@ -37,7 +37,7 @@ export default function AppConversas({ navigation, userID }) {
 
         let ultimaAtualizacao = await AsyncStorage.getItem('horaAtualizacao');
 
-        const response = await axios.get(`${API_URL}/message/buscarNovasMensages/${data}/${hora}/${userID}`);
+      //  const response = await axios.get(`${API_URL}/message/buscarNovasMensages/${data}/${hora}/${userID}`);
 
         console.log("Busquei atualizacao: " + ultimaAtualizacao);
         
